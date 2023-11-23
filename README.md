@@ -24,7 +24,7 @@
    - Deep Neural Network - DNN
    - Recurrent Neural Network - RNN
 
-5. Check that you are in the right environment
+5. Check that you are in the right environment - the activated environment will have a "*" next to it. 
 
    ```conda info --envs```
 
