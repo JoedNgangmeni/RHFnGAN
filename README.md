@@ -7,6 +7,8 @@
    - Track .arff files with ```git lfs track "*.arff"```
    - Track .csv files with ```git lfs track "*.csv"```
    - Track .zip files with ```git lfs track "*.zip"```
+  
+4. Allow git to track the gitattributes file ```git add .gitattributes```
 
 **Each model runs in its own conda environment.** When trying to run a specific model, activate that model's conda environment by following these steps:
 1. In your systems command line, navigate to the base directory for the model you want to run
