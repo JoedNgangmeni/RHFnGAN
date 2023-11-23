@@ -15,7 +15,7 @@
 
    ```conda activate environment_name```
 
-   ** NOTE:** replace "environment_name" with the type of model you want to run.
+   **NOTE:** replace "environment_name" with the type of model you want to run.
    
    - For Traditional Random Forest - TRF
    - For Random Hinge Forest - RHF
