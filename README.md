@@ -13,4 +13,14 @@
 
 4. Once the environment is created, activate it by running the following code
 
-   ```{conda activate environment_name}```
+   ```conda activate environment_name```
+
+**REPLACE "environment_name" with the type of model you want to run.**
+   
+   - For Traditional Random Forest - TRF
+   - For Random Hinge Forest - RHF
+   - For XGBoost - XG
+   - For LightGBM - LG
+   - For Deep Neural Network - DNN
+   - For Recurrent Neural Network - RNN
+
