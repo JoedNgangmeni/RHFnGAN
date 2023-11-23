@@ -15,12 +15,12 @@
 
    ```conda activate environment_name```
 
-   **NOTE:** replace "environment_name" with the type of model you want to run.
+   **NOTE:** replace "environment_name" with the correct abbreviation for the model you want to run.
    
-   - For Traditional Random Forest - TRF
-   - For Random Hinge Forest - RHF
-   - For XGBoost - XG
-   - For LightGBM - LG
-   - For Deep Neural Network - DNN
-   - For Recurrent Neural Network - RNN
+   - Traditional Random Forest - TRF
+   - Random Hinge Forest - RHF
+   - XGBoost - XG
+   - LightGBM - LG
+   - Deep Neural Network - DNN
+   - Recurrent Neural Network - RNN
 
