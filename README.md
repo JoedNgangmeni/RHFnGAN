@@ -10,6 +10,7 @@
 2. Create the conda environment for that specific model by running the following code  **Make sure your terminal is in the base directory for that model**
 
    ```conda env create -f environment.yml``` 
+
 4. Once the environment is created, activate it by running the following code
 
    ```{conda activate environment_name}```
