@@ -3,7 +3,7 @@
 # Getting Started
 
 1. Clone this repo
-2. Visit [Anaconda's website](https://docs.anaconda.com/free/anaconda/install/index.html) and download the version that suits your operating system.
+2. Visit [Anaconda's website](https://docs.anaconda.com/free/anaconda/install/index.html) and download the Anaconda version that suits your operating system.
 
 **Each model runs in its own conda environment.** When trying to run a specific model, activate that model's conda environment by following these steps:
 1. In your systems command line, navigate to the base directory for the model you want to run
