@@ -3,6 +3,7 @@
 1. Clone this repo
 2. Visit [Anaconda's website](https://docs.anaconda.com/free/anaconda/install/index.html) and download the Anaconda version that suits your operating system.
 3. Because some files in this repo are larger than recommended, visit [The LFS page](https://git-lfs.com/) and follow their directions.
+   
    - Track .arff files with ```git lfs track "*.arff"```
    - Track .csv files with ```git lfs track "*.csv"```
    - Track .zip files with ```git lfs track "*.zip"```
