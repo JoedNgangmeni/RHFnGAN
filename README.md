@@ -7,7 +7,7 @@
 
 **Each model runs in its own conda environment.** When tryinf to run a specific model, be sure to activate that models conda environment by following these steps
 1. In your systems command line, navigate to the base directory for the model you want to run
-2. Create the conda environment for that specific model by running the following code  **Make sure your terminal is in the base directory for that model**
+2. **Make sure your terminal is in the base directory for that model.** Create the conda environment for that specific model by running the following code  
 
    ```conda env create -f environment.yml``` 
 
