@@ -2,7 +2,10 @@
 
 1. Clone this repo
 2. Visit [Anaconda's website](https://docs.anaconda.com/free/anaconda/install/index.html) and download the Anaconda version that suits your operating system.
-3. Configure git-lfs, because some files in this repo are larger than recommended, by either visiting [The LFS page](https://git-lfs.com/) and following their directions.
+3. Because some files in this repo are larger than recommended, visit [The LFS page](https://git-lfs.com/) and follow their directions.
+   - Track .arff files with ```git lfs track "*.arff"```
+   - Track .csv files with ```git lfs track "*.csv"```
+   - Track .zip files with ```git lfs track "*.zip"```
 
 **Each model runs in its own conda environment.** When trying to run a specific model, activate that model's conda environment by following these steps:
 1. In your systems command line, navigate to the base directory for the model you want to run
