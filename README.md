@@ -33,4 +33,8 @@
 
    ```conda info --envs```
 
-6.
+6. Install ucimlrepo for the remaining data files
+
+   ```pip install ucimlrepo```
+
+7. Run your model
