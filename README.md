@@ -2,18 +2,18 @@
 
 1. Clone this repo
 2. Visit [Anaconda's website](https://docs.anaconda.com/free/anaconda/install/index.html) and download the Anaconda version that suits your operating system.
-3. Configure git-lfs because some files in this repo are large by either visiting [The LFS page](https://git-lfs.com/) and downloading the version suited for your operating system or running one of the following commands
+3. Configure git-lfs because some files in this repo are large by either visiting [The LFS page](https://git-lfs.com/) and downloading the version suited for your operating system or:
 
    - For Homewbrew: ```brew install git-lfs```
    - For MacPorts: ```port install git-lfs```
 
 **Each model runs in its own conda environment.** When trying to run a specific model, activate that model's conda environment by following these steps:
 1. In your systems command line, navigate to the base directory for the model you want to run
-2. **Make sure your terminal is in the base directory for that model.** Create the conda environment for that specific model by running the following code  
+2. **Make sure your terminal is in the base directory for that model.** Create the conda environment for that specific model:  
 
    ```conda env create -f environment.yml``` 
 
-4. Once the environment is created, activate it by running the following code
+4. Once the environment is created, activate it:
 
    ```conda activate environment_name```
 
