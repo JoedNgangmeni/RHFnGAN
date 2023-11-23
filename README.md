@@ -5,7 +5,7 @@
 1. Clone this repo
 2. Visit [Anaconda's website](https://docs.anaconda.com/free/anaconda/install/index.html) and download the version that suits your operating system.
 
-**Each model runs in its own conda environment.** When tryinf to run a specific model, be sure to activate that models conda environment by following these steps
+**Each model runs in its own conda environment.** When trying to run a specific model, activate that model's conda environment by following these steps:
 1. In your systems command line, navigate to the base directory for the model you want to run
 2. **Make sure your terminal is in the base directory for that model.** Create the conda environment for that specific model by running the following code  
 
@@ -24,7 +24,7 @@
    - Deep Neural Network - DNN
    - Recurrent Neural Network - RNN
 
-5. Check that you are in the right environment - the activated environment will have a "*" next to it. 
+5. Check that you are in the right environment - the activated environment will have a * next to it. 
 
    ```conda info --envs```
 
