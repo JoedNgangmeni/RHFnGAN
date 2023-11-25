@@ -39,16 +39,16 @@ MAX_RUNS = 50
 regressionDatasets = ['cali', 'air', 'fb' , 'aba']
 classificationDatasets = ['income', 'diabetes', 'cancer', 'wine', 'HAR']
 
-iris = load_iris()
-
 for dataset in myDatasets:
     if dataset in regressionDatasets:
         if dataset == 'cali':
             specOut = "caliOutput"
             # https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_california_housing.html
             data = sklearn.datasets.fetch_california_housing(download_if_missing=True, as_frame=True)
-            X = tf.convert_to_tensor(data.data)
-            y = tf.convert_to_tensor(data.target)
+            X = data.data
+            print(X)
+            y = data.target
+            print(y)
 
         # elif dataset == 'air':
         #     specOut = "airOutput"
@@ -59,9 +59,8 @@ for dataset in myDatasets:
         #     temp = temp.drop('Date', axis =1)
         #     temp = temp.drop('NO2(GT)', axis =1)
         #     temp = temp.drop('PT08.S4(NO2)', axis =1)
-        #     y = tf.convert_to_tensor(data.data.features['NOx(GT)'])
-        #     X = tf.convert_to_tensor(temp.drop('NOx(GT)', axis =1))
-
+        #     y = data.data.features['NOx(GT)'] 
+        #     X = temp.drop('NOx(GT)', axis =1)
 
         # elif dataset == 'fb':
         #     specOut = "fbOutput"
@@ -70,8 +69,8 @@ for dataset in myDatasets:
         #     trainingVariants =['Features_Variant_1.csv', 'Features_Variant_2.csv', 'Features_Variant_3.csv', 'Features_Variant_4.csv', 'Features_Variant_5.csv']
         #     fileName = random.choice(trainingVariants)
         #     data = pd.read_csv(pathToFile+ fileName)
-        #     X = tf.convert_to_tensor(data.iloc[:,:-1])
-        #     y = tf.convert_to_tensor(data.iloc[:,-1])
+        #     X = data.iloc[:,:-1]
+        #     y = data.iloc[:,-1]
         #     # y = y.values.ravel()
 
         
@@ -91,43 +90,306 @@ for dataset in myDatasets:
         #     data['data']['features'] = data['data']['features'].drop('Sex', axis=1)
 
         #     # # data (as pandas dataframes) 
-        #     X = tf.convert_to_tensor(data.data.features)
-        #     y = tf.convert_to_tensor(data.data.targets)
-        #     y = tf.convert_to_tensor(y.values.ravel())
+        #     X = data.data.features 
+        #     y = data.data.targets 
+        #     y = y.values.ravel()
 
-
-
-        print('dataset name:' + dataset)
-        print("Shape of X:", X.shape)
-        print("Shape of y:", y.shape)
+        
+        # print(f'dataset name: {dataset}')
+        # print("Shape of X:", X.shape)
+        # print("Shape of y:", y.shape)
         # print("Type of y:", type(y))
-        # print("y:", y)
-        # print('\n\n')
-        # print('X head: {X.head()}\n\n')
-        # print('y head: {y}\n\n')
+        # # print("y:", y)
+        # # print('\n\n')
+        # print(f'X head: {X.head()}\n\n')
+        # print(f'y head: {y}\n\n')
+        # gh
+        # print(f'data keys: {data.data.keys()}\n\n')
 
 
+        for numEstimators in N_ESTIMATORS:
+            for depth in DEPTH:
+                runNumber = 1
+                while (runNumber < MAX_RUNS + 1):
+                    # print(depth)
+                    # print(f'{numEstimators}est_{depth}deep_RF')
+
+                    output_path = os.path.join(base_dir, outpDir, specOut)
+                    # print(output_path)
+                    saveHere = os.path.join(output_path, f'{numEstimators}est_{depth}deep_{dataset}_RF')
 
 
-# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3) as tensorflow
+                    # add header to data file
+                    # if runNumber == 1:
+                    #     with open(saveHere, 'a') as output_file:
+                    #         output_file.write(f"r2\trmse\tmse\toob\tmae\n")    
+
+                    tf.experimental.numpy.experimental_enable_numpy_behavior()
+                    # Split the data into training and testing sets 
+                    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+
+                    X_train = tf.convert_to_tensor(X_train)
+                    X_train = X_train.reshape(X_train.shape[0], 1, X_train.shape[1])
+                    X_test = tf.convert_to_tensor(X_test)
+
+                    y_train = tf.convert_to_tensor(X_train)
+                    y_test = tf.convert_to_tensor(X_test)
+
+                    print(X_train.shape)
+                    print(X_train[0].shape)
+
+                    model = Sequential()
+                    model.add(LSTM(128, input_shape=(X_train.shape[1:]), activation='relu', return_sequences=True)) # of cells
+                    model.add(Dropout(0.2))
+
+                    model.add(LSTM(128, activation='relu'))
+                    model.add(Dropout(0.2))
+
+                    model.add(Dense(32, activation='relu'))
+                    model.add(Dropout(0.2))
+
+                    model.add(Dense(8, activation='sigmoid'))
+                    opt = tf.keras.optimizers.Adam(lr=1e-3)
+
+                    model.compile(loss='mse', 
+                                  optimizer=opt,
+                                  metrics=['accuracy'])
+                                                    
+                    model.fit(X_train, y_train, epochs=3, validation_data=(X_test,y_test))
+
+                    
+
+                    #RNN
+
+                    # Initialize the random forest
+                    # rf = RandomForestRegressor(n_estimators=numEstimators, max_depth=depth, max_features='sqrt', bootstrap=True, oob_score=True)
+
+                    # Train the model
+                    # rf.fit(X_train, y_train)
+
+                    # # Make predictions on the test set
+                    # y_pred = rf.predict(X_test)
+
+                    # # Calculate R^2 score
+                    # r2 = r2_score(y_test, y_pred)
+
+                    # # Calculate MSE
+                    # mse = mean_squared_error(y_test, y_pred)
+
+                    # # Calculate RMSE
+                    # rmse = math.sqrt(mse)
+
+                    # # Calculate MAE
+                    # mae = mean_absolute_error(y_test, y_pred)
+
+                    # # Calculate OOB
+                    # oob = 1 - rf.oob_score_
+
+                    # with open(saveHere, 'a') as output_file:
+                    #     output_file.write(f"{r2}\t{rmse}\t{mse}\t{oob}\t{mae}\n")
+
+                    # runNumber +=1
+    
+#     elif dataset in classificationDatasets:
+#         if dataset == 'income':
+#             specOut = "incomeOutput"
+#             # https://archive.ics.uci.edu/dataset/2/adult
+#             # fetch dataset 
+#             data = fetch_ucirepo(id=2) 
+            
+#             for nonNumFeat in data.data.features.columns:
+#                 if (data.data.features.dtypes[nonNumFeat] != np.int64) and (data.data.features.dtypes[nonNumFeat] != np.float64):
+#                     # Create one-hot encoding
+#                     one_hot_encoded = pd.get_dummies(data.data.features[nonNumFeat], prefix=nonNumFeat)
+
+#                     # Concatenate the one-hot encoded columns with the original DataFrame
+#                     data.data.features = pd.concat([data.data.features, one_hot_encoded], axis=1)
+
+#                     # Drop the original column
+#                     data.data.features = data.data.features.drop(nonNumFeat, axis=1)
+
+#             # data (as pandas dataframes) 
+#             X = data.data.features 
+#             y = data.data.targets 
+#             y = y.values.ravel()  
+
+#             y[y == '<=50K.'] = '<=50K' 
+#             y[y == '>50K.'] = '>50K' 
+#             y[y == '<=50K'] = 'NO' 
+#             y[y == '>50K'] = "YES" 
+
+
+#             # print(f'dataset name: {dataset}')
+#             # print("Shape of X:", data.metadata)
+#             # print("Shape of y:", X_train.shape)
+#             # print("Types in x:", type(y))
+#             # print("y:", y)
+#             # print('\n\n')
+#             # print(f'X head: {X.head()}\n\n')
+#             # print(f'y head: {y.head()}\n\n')
+#             # print(f'y head: {np.unique(y)}')
+#             # print(f'data keys: {type(X.keys())}\n\n')
+#             # print(data.data.features.dtypes.unique())
+
+#             # gh
+
+#         elif dataset == 'diabetes': 
+#             specOut = "diabetesOutput"
+#             # https://www.kaggle.com/datasets/uciml/pima-indians-diabetes-database/?select=diabetes.csv
+#             pathToFile = os.path.join(base_dir, '../../Datasets/diabetes.csv')
+#             data = pd.read_csv(pathToFile)
+#             X = data.iloc[:,:-1]
+#             y = data.iloc[:,-1]
+#             # y = y.values.ravel()
+
+
+#         elif dataset == 'cancer':
+#             specOut = "cancerOutput"
+#             # https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnostic
+#             # fetch dataset 
+#             data = fetch_ucirepo(id=17) 
+            
+#             # data (as pandas dataframes) 
+#             X = data.data.features 
+#             y = data.data.targets 
+#             y = y.values.ravel()
+
+#         elif dataset == 'wine':
+#             specOut = "wineOutput"
+#             # https://archive.ics.uci.edu/dataset/186/wine+quality
+  
+#             # fetch dataset     
+#             data = fetch_ucirepo(id=186) 
+            
+#             # data (as pandas dataframes) 
+#             X = data.data.features 
+#             y = data.data.targets 
+#             y = y.values.ravel()
+
+#             # print(f'dataset name: {dataset}')
+#             # print("Shape of X:", data.metadata)
+#             # print("Shape of y:", X_train.shape)
+#             # print("Types in x:", type(y))
+#             # print("y:", y)
+#             # print('\n\n')
+#             # print(f'X head: {X.head()}\n\n')
+#             # print(f'y head: {y.head()}\n\n')
+#             # print(f'y head: {np.unique(y)}')
+#             # print(f'data keys: {type(X.keys())}\n\n')
+#             # print(data.data.features.dtypes.unique())
+
+#             # gh
+
+
+            
+#         elif dataset == 'HAR':
+#             specOut = "harOutput"
+#             # https://archive.ics.uci.edu/dataset/240/human+activity+recognition+using+smartphones
+#             data = pd.read_csv(os.path.join(base_dir, '../../Datasets/hartrain.csv') , delimiter = ',')
+#             X = data.iloc[:,:-1]
+#             y = data.iloc[:,-1]
+
+#             # data = pd.read_csv(os.path.join(base_dir, '../../Datasets/hartest.csv') , delimiter=',')
+#             # X_test = data.iloc[:,:-1]
+#             # y_test = data.iloc[:,-1]
         
-        dataset = tf.data.Dataset.from_tensor_slices((X, y))
-        print(dataset)
-        xu
-        dataset = X.shuffle(len(X))
-        # Split the dataset into training and testing sets
-        split_ratio = 0.7  # 80% training, 20% testing
+#         for numEstimators in N_ESTIMATORS:
+#             for depth in DEPTH:
+#                 runNumber = 1
+#                 while (runNumber < MAX_RUNS + 1):
+#                     # print(depth)
+#                     # print(f'{numEstimators}est_{depth}deep_RF')
 
-        train_size = int(len(X) * split_ratio)
+#                     output_path = os.path.join(base_dir, outpDir, specOut)
+#                     # print(output_path)
+#                     saveHere = os.path.join(output_path, f'{numEstimators}est_{depth}deep_{dataset}_RF')
+
+#                     # add header to data file
+#                     if runNumber == 1:
+#                         with open(saveHere, 'a') as output_file:
+#                             # output_file.write(f"accuracy\tprecision\trecall\tf1\tfpr\ttpr\tthresholds\n")    
+#                             output_file.write(f"accuracy\tprecision\trecall\tf1\tconfMatrxVars\n")    
 
 
-        X_train = dataset.take(train_size) #70%
-        X_test = dataset.skip(train_size)  #30%
-        y_train = dataset.take(train_size)
+#                     # Split the data into training and testing sets
+#                     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+
+#                     # Initialize the random forest
+#                     rf = RandomForestClassifier(n_estimators=numEstimators, max_depth=depth, max_features='sqrt', bootstrap=True, oob_score=True)
+
+#                     # Train the model
+#                     rf.fit(X_train, y_train)
+
+#                     # Make predictions on the test set
+#                     y_pred = rf.predict(X_test)
+
+#                     # measure Accuracy 
+#                     accuracy = accuracy_score(y_test, y_pred)
+
+#                     # measure precision 
+#                     precision = precision_score(y_test, y_pred, average='weighted', zero_division=0)
+
+#                     # measure recall 
+#                     recall = recall_score(y_test, y_pred, average='weighted', zero_division=0)
+
+#                     # measure f1 
+#                     f1 = f1_score(y_test, y_pred, average='weighted' , zero_division=0)
+
+#                     # Get predicted probabilities for the positive class
+#                     y_probs = rf.predict_proba(X_test)[:, 1]
+
+
+#                     # Compute ROC curve and AUC
+#                     # if dataset == "income":
+#                     #     fpr, tpr, thresholds = roc_curve(y_test, y_probs, pos_label='YES')
+#                     #     roc_auc = auc(fpr, tpr)
+
+#                     # elif dataset == "cancer":
+#                     #     fpr, tpr, thresholds = roc_curve(y_test, y_probs, pos_label='M')
+#                     #     roc_auc = auc(fpr, tpr)
+
+#                     # elif dataset == "wine":
+#                     #     y_probs = rf.predict_proba(X_test)
+#                     #     roc_auc = roc_auc_score(y_test, y_probs, multi_class='ovr')
+
+
+#                     # else:
+#                     #     fpr, tpr, thresholds = roc_curve(y_test, y_probs)
+#                     #     roc_auc = auc(fpr, tpr)
+                        
+
+#                     # thresholds_str = ",".join(map(str, thresholds))
+
+#                     # create confusion matrix
+#                     conf_matrix = confusion_matrix(y_test, y_pred)
+#                     # print(conf_matrix.shape)
+                
+
+#                     # Save data
+#                     with open(saveHere, 'a') as output_file:
+#                         # output_file.write(f"{accuracy}\t{precision}\t{recall}\t{f1}\t{fpr}\t{tpr}\t{thresholds_str}\n")
+#                         output_file.write(f"{accuracy}\t{precision}\t{recall}\t{f1}\t")
+#                         for row in conf_matrix:
+#                             output_file.write(",".join(map(str, row)))
+#                         output_file.write("\n")
+#                     runNumber +=1
+    
+
+
+            
+
+
+            
+
 
 
         
 
-        
-        # print(X_train.shape)
-        # print(X_train[0].shape)
+
+
+
+# # print(f'R^2 Score: {r2}')
+# # print(f'rmse: {rmse}')
+# # print(f'mse: {mse}')
+# # print(f'OOB Score: {oob}')
+# # print(f'mae: {mae}')
