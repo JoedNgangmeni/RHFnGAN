@@ -46,9 +46,7 @@ for dataset in myDatasets:
             # https://scikit-learn.org/stable/modules/generated/sklearn.datasets.fetch_california_housing.html
             data = sklearn.datasets.fetch_california_housing(download_if_missing=True, as_frame=True)
             X = data.data
-            print(X)
             y = data.target
-            print(y)
 
         # elif dataset == 'air':
         #     specOut = "airOutput"
@@ -122,24 +120,28 @@ for dataset in myDatasets:
                     # add header to data file
                     # if runNumber == 1:
                     #     with open(saveHere, 'a') as output_file:
-                    #         output_file.write(f"r2\trmse\tmse\toob\tmae\n")    
+                    #         output_file.write(f"r2\trmse\tmse\toob\tmae\n")
+
+
+                    # Initialize Recurrent Neural Network Model
 
                     tf.experimental.numpy.experimental_enable_numpy_behavior()
+
                     # Split the data into training and testing sets 
                     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
-                    X_train = tf.convert_to_tensor(X_train)
-                    X_train = X_train.reshape(X_train.shape[0], 1, X_train.shape[1])
-                    X_test = tf.convert_to_tensor(X_test)
+                    X_train_tensor = tf.convert_to_tensor(X_train)
+                    X_test_tensor = tf.convert_to_tensor(X_test)
 
-                    y_train = tf.convert_to_tensor(X_train)
-                    y_test = tf.convert_to_tensor(X_test)
+                    # Reshape input data for LSTM layers: Add an additional dimension of length 1
+                    X_train_tensor = X_train_tensor.reshape(X_train_tensor.shape[0], 1, X_train_tensor.shape[1])
+                    X_test_tensor = X_test_tensor.reshape(X_test_tensor.shape[0], 1, X_test_tensor.shape[1])
 
-                    print(X_train.shape)
-                    print(X_train[0].shape)
-
+                    y_train_tensor = tf.convert_to_tensor(y_train)
+                    y_test_tensor = tf.convert_to_tensor(y_test)
+   
                     model = Sequential()
-                    model.add(LSTM(128, input_shape=(X_train.shape[1:]), activation='relu', return_sequences=True)) # of cells
+                    model.add(LSTM(128, input_shape=(X_train_tensor.shape[1:]), activation='relu', return_sequences=True)) # of cells
                     model.add(Dropout(0.2))
 
                     model.add(LSTM(128, activation='relu'))
@@ -148,18 +150,12 @@ for dataset in myDatasets:
                     model.add(Dense(32, activation='relu'))
                     model.add(Dropout(0.2))
 
-                    model.add(Dense(8, activation='sigmoid'))
+                    model.add(Dense(X.shape[1], activation='sigmoid'))
+
                     opt = tf.keras.optimizers.Adam(lr=1e-3)
+                    model.compile(loss='mse', optimizer=opt, metrics=['accuracy'])                     
+                    model.fit(X_train_tensor, y_train_tensor, epochs=3, validation_data=(X_test_tensor,y_test_tensor))
 
-                    model.compile(loss='mse', 
-                                  optimizer=opt,
-                                  metrics=['accuracy'])
-                                                    
-                    model.fit(X_train, y_train, epochs=3, validation_data=(X_test,y_test))
-
-                    
-
-                    #RNN
 
                     # Initialize the random forest
                     # rf = RandomForestRegressor(n_estimators=numEstimators, max_depth=depth, max_features='sqrt', bootstrap=True, oob_score=True)
