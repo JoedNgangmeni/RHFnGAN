@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 
 import math, sklearn, os, random
 from sklearn.datasets import fetch_california_housing
-# from ucimlrepo import fetch_ucirepo
+from ucimlrepo import fetch_ucirepo
 from sklearn.datasets import load_iris
 
 
@@ -24,16 +24,16 @@ current_date = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
 
 # LOOP CONTROLLERS
 myDatasets = ['cali', 'air', 'fb' , 'aba', 'income', 'diabetes', 'cancer', 'wine', 'HAR' ]
-N_ESTIMATORS = [1, 10, 50, 100, 150, 200]
-DEPTH = [1, 3, 5, 7, 10, 15, 20]
-MAX_RUNS = 50
+# N_ESTIMATORS = [1, 10, 50, 100, 150, 200]
+# DEPTH = [1, 3, 5, 7, 10, 15, 20]
+# MAX_RUNS = 50
 
 
 # QUICK TEST CONTROLS
-# MAX_RUNS = 3
-# N_ESTIMATORS = [50]
-# DEPTH = [1]
-# myDatasets = [  'wine' ]
+MAX_RUNS = 3
+N_ESTIMATORS = [50]
+DEPTH = [1]
+myDatasets = [  'cali' ]
 
 
 regressionDatasets = ['cali', 'air', 'fb' , 'aba']
@@ -48,49 +48,49 @@ for dataset in myDatasets:
             X = data.data
             y = data.target
 
-        # elif dataset == 'air':
-        #     specOut = "airOutput"
-        #     # https://archive.ics.uci.edu/dataset/360/air+quality
-        #     data = fetch_ucirepo(id=360) 
-        #     temp = data.data.features.drop('PT08.S3(NOx)', axis =1)
-        #     temp = temp.drop('Time', axis =1)
-        #     temp = temp.drop('Date', axis =1)
-        #     temp = temp.drop('NO2(GT)', axis =1)
-        #     temp = temp.drop('PT08.S4(NO2)', axis =1)
-        #     y = data.data.features['NOx(GT)'] 
-        #     X = temp.drop('NOx(GT)', axis =1)
+        elif dataset == 'air':
+            specOut = "airOutput"
+            # https://archive.ics.uci.edu/dataset/360/air+quality
+            data = fetch_ucirepo(id=360) 
+            temp = data.data.features.drop('PT08.S3(NOx)', axis =1)
+            temp = temp.drop('Time', axis =1)
+            temp = temp.drop('Date', axis =1)
+            temp = temp.drop('NO2(GT)', axis =1)
+            temp = temp.drop('PT08.S4(NO2)', axis =1)
+            y = data.data.features['NOx(GT)'] 
+            X = temp.drop('NOx(GT)', axis =1)
 
-        # elif dataset == 'fb':
-        #     specOut = "fbOutput"
-        #     # https://archive.ics.uci.edu/dataset/363/facebook+comment+volume+dataset
-        #     pathToFile = os.path.join(base_dir, '../../Datasets/fb_git_repo/dataset/Training/')
-        #     trainingVariants =['Features_Variant_1.csv', 'Features_Variant_2.csv', 'Features_Variant_3.csv', 'Features_Variant_4.csv', 'Features_Variant_5.csv']
-        #     fileName = random.choice(trainingVariants)
-        #     data = pd.read_csv(pathToFile+ fileName)
-        #     X = data.iloc[:,:-1]
-        #     y = data.iloc[:,-1]
-        #     # y = y.values.ravel()
+        elif dataset == 'fb':
+            specOut = "fbOutput"
+            # https://archive.ics.uci.edu/dataset/363/facebook+comment+volume+dataset
+            pathToFile = os.path.join(base_dir, '../../Datasets/fb_git_repo/dataset/Training/')
+            trainingVariants =['Features_Variant_1.csv', 'Features_Variant_2.csv', 'Features_Variant_3.csv', 'Features_Variant_4.csv', 'Features_Variant_5.csv']
+            fileName = random.choice(trainingVariants)
+            data = pd.read_csv(pathToFile+ fileName)
+            X = data.iloc[:,:-1]
+            y = data.iloc[:,-1]
+            # y = y.values.ravel()
 
         
-        # elif dataset =='aba':
-        #     specOut = "abaOutput"
-        #     # https://archive.ics.uci.edu/dataset/1/abalone
-        #     data = fetch_ucirepo(id=1) 
-        #     data['data']['features'].loc[:, 'Sex'] = data['data']['features']['Sex'].astype('category')
+        elif dataset =='aba':
+            specOut = "abaOutput"
+            # https://archive.ics.uci.edu/dataset/1/abalone
+            data = fetch_ucirepo(id=1) 
+            data['data']['features'].loc[:, 'Sex'] = data['data']['features']['Sex'].astype('category')
 
-        #     # Create one-hot encoding
-        #     one_hot_encoded = pd.get_dummies(data['data']['features']['Sex'], prefix='Sex')
+            # Create one-hot encoding
+            one_hot_encoded = pd.get_dummies(data['data']['features']['Sex'], prefix='Sex')
 
-        #     # Concatenate the one-hot encoded columns with the original DataFrame
-        #     data['data']['features'] = pd.concat([data['data']['features'], one_hot_encoded], axis=1)
+            # Concatenate the one-hot encoded columns with the original DataFrame
+            data['data']['features'] = pd.concat([data['data']['features'], one_hot_encoded], axis=1)
 
-        #     # Drop the original 'Sex' column
-        #     data['data']['features'] = data['data']['features'].drop('Sex', axis=1)
+            # Drop the original 'Sex' column
+            data['data']['features'] = data['data']['features'].drop('Sex', axis=1)
 
-        #     # # data (as pandas dataframes) 
-        #     X = data.data.features 
-        #     y = data.data.targets 
-        #     y = y.values.ravel()
+            # # data (as pandas dataframes) 
+            X = data.data.features 
+            y = data.data.targets 
+            y = y.values.ravel()
 
         
         # print(f'dataset name: {dataset}')
@@ -139,22 +139,21 @@ for dataset in myDatasets:
 
                     y_train_tensor = tf.convert_to_tensor(y_train)
                     y_test_tensor = tf.convert_to_tensor(y_test)
-   
+
+                    # number of neruansd and number of layers
                     model = Sequential()
-                    model.add(LSTM(128, input_shape=(X_train_tensor.shape[1:]), activation='relu', return_sequences=True)) # of cells
+                    model.add(LSTM(32, input_shape=(X_train_tensor.shape[1:]), activation='relu', return_sequences=True)) # of cells
                     model.add(Dropout(0.2))
 
-                    model.add(LSTM(128, activation='relu'))
+                    model.add(LSTM(16, activation='relu'))
                     model.add(Dropout(0.2))
 
-                    model.add(Dense(32, activation='relu'))
-                    model.add(Dropout(0.2))
 
                     model.add(Dense(X.shape[1], activation='sigmoid'))
 
-                    opt = tf.keras.optimizers.Adam(lr=1e-3)
+                    opt = tf.keras.optimizers.legacy.Adam(lr=1e-3)
                     model.compile(loss='mse', optimizer=opt, metrics=['accuracy'])                     
-                    model.fit(X_train_tensor, y_train_tensor, epochs=3, validation_data=(X_test_tensor,y_test_tensor))
+                    model.fit(X_train_tensor, y_train_tensor, epochs=4, validation_data=(X_test_tensor,y_test_tensor))
 
 
                     # Initialize the random forest
@@ -184,7 +183,7 @@ for dataset in myDatasets:
                     # with open(saveHere, 'a') as output_file:
                     #     output_file.write(f"{r2}\t{rmse}\t{mse}\t{oob}\t{mae}\n")
 
-                    # runNumber +=1
+                    runNumber +=1
     
 #     elif dataset in classificationDatasets:
 #         if dataset == 'income':
