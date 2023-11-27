@@ -167,8 +167,10 @@ for dataset in myDatasets:
                     model.add(Dense(64, activation='relu'))
                     model.add(Dense(1))
                     model.compile(loss='mse', optimizer='adam', metrics=['mae'])
+
                     # Train the model
                     model.fit(X_train, y_train, epochs=100, batch_size=32, validation_data=(X_test, y_test))
+                    
                     # Evaluate the model
                     model.evaluate(X_test, y_test)
 
