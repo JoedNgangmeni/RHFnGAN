@@ -5,6 +5,7 @@ import tensorflow_datasets as tfds
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout, LSTM
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 import math, sklearn, os, random
 from sklearn.datasets import fetch_california_housing
@@ -123,37 +124,53 @@ for dataset in myDatasets:
                     #         output_file.write(f"r2\trmse\tmse\toob\tmae\n")
 
 
-                    # Initialize Recurrent Neural Network Model
+
 
                     tf.experimental.numpy.experimental_enable_numpy_behavior()
 
                     # Split the data into training and testing sets 
                     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
+                    # StandardScaler
+                    sc = StandardScaler()
+                    X_train = sc.fit_transform(X_train)
+                    X_test=sc.transform(X_test)
+
                     X_train_tensor = tf.convert_to_tensor(X_train)
                     X_test_tensor = tf.convert_to_tensor(X_test)
 
                     # Reshape input data for LSTM layers: Add an additional dimension of length 1
-                    X_train_tensor = X_train_tensor.reshape(X_train_tensor.shape[0], 1, X_train_tensor.shape[1])
-                    X_test_tensor = X_test_tensor.reshape(X_test_tensor.shape[0], 1, X_test_tensor.shape[1])
+                    # X_train_tensor = X_train_tensor.reshape(X_train_tensor.shape[0], 1, X_train_tensor.shape[1])
+                    # X_test_tensor = X_test_tensor.reshape(X_test_tensor.shape[0], 1, X_test_tensor.shape[1])
 
                     y_train_tensor = tf.convert_to_tensor(y_train)
                     y_test_tensor = tf.convert_to_tensor(y_test)
 
                     # number of neruansd and number of layers
                     model = Sequential()
-                    model.add(LSTM(32, input_shape=(X_train_tensor.shape[1:]), activation='relu', return_sequences=True)) # of cells
-                    model.add(Dropout(0.2))
 
-                    model.add(LSTM(16, activation='relu'))
-                    model.add(Dropout(0.2))
+                    
+                    # model.add(Dense(16, activation='relu', input_shape=(8,)))
+                    # model.add(Dense(16, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.001)))
+                    # model.add(Dropout(0.5))
+                    # model.add(Dense(1, activation='sigmoid'))
+                    # opt = tf.keras.optimizers.legacy.Adam(learning_rate=0.0001)
+                    # model.compile(loss='mse', optimizer=opt, metrics=['accuracy'])
+                    # early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)
+                    # model.fit(X_train,y_train, batch_size=32, epochs=1000, validation_data=(X_test,y_test), callbacks=[early_stopping])
 
-
-                    model.add(Dense(X.shape[1], activation='sigmoid'))
-
-                    opt = tf.keras.optimizers.legacy.Adam(lr=1e-3)
-                    model.compile(loss='mse', optimizer=opt, metrics=['accuracy'])                     
-                    model.fit(X_train_tensor, y_train_tensor, epochs=4, validation_data=(X_test_tensor,y_test_tensor))
+                    # Initialize Neural Network Model -
+                        # layer 1 - 64 neurons 
+                        # layer 2 - 64 neurons 
+                        # layer 1 - 1 neuron 
+                    model.add(Dense(64, activation='relu', input_shape=(8,)))
+                    model.add(Dense(64, activation='relu'))
+                    model.add(Dense(1))
+                    model.compile(loss='mse', optimizer='adam', metrics=['mae'])
+                    # Train the model
+                    model.fit(X_train, y_train, epochs=100, batch_size=32, validation_data=(X_test, y_test))
+                    # Evaluate the model
+                    model.evaluate(X_test, y_test)
 
 
                     # Initialize the random forest
@@ -214,19 +231,19 @@ for dataset in myDatasets:
 #             y[y == '>50K'] = "YES" 
 
 
-#             # print(f'dataset name: {dataset}')
-#             # print("Shape of X:", data.metadata)
-#             # print("Shape of y:", X_train.shape)
-#             # print("Types in x:", type(y))
-#             # print("y:", y)
-#             # print('\n\n')
-#             # print(f'X head: {X.head()}\n\n')
-#             # print(f'y head: {y.head()}\n\n')
-#             # print(f'y head: {np.unique(y)}')
-#             # print(f'data keys: {type(X.keys())}\n\n')
-#             # print(data.data.features.dtypes.unique())
+# #             # print(f'dataset name: {dataset}')
+# #             # print("Shape of X:", data.metadata)
+# #             # print("Shape of y:", X_train.shape)
+# #             # print("Types in x:", type(y))
+# #             # print("y:", y)
+# #             # print('\n\n')
+# #             # print(f'X head: {X.head()}\n\n')
+# #             # print(f'y head: {y.head()}\n\n')
+# #             # print(f'y head: {np.unique(y)}')
+# #             # print(f'data keys: {type(X.keys())}\n\n')
+# #             # print(data.data.features.dtypes.unique())
 
-#             # gh
+# #             # gh
 
 #         elif dataset == 'diabetes': 
 #             specOut = "diabetesOutput"
@@ -261,19 +278,19 @@ for dataset in myDatasets:
 #             y = data.data.targets 
 #             y = y.values.ravel()
 
-#             # print(f'dataset name: {dataset}')
-#             # print("Shape of X:", data.metadata)
-#             # print("Shape of y:", X_train.shape)
-#             # print("Types in x:", type(y))
-#             # print("y:", y)
-#             # print('\n\n')
-#             # print(f'X head: {X.head()}\n\n')
-#             # print(f'y head: {y.head()}\n\n')
-#             # print(f'y head: {np.unique(y)}')
-#             # print(f'data keys: {type(X.keys())}\n\n')
-#             # print(data.data.features.dtypes.unique())
+# #             # print(f'dataset name: {dataset}')
+# #             # print("Shape of X:", data.metadata)
+# #             # print("Shape of y:", X_train.shape)
+# #             # print("Types in x:", type(y))
+# #             # print("y:", y)
+# #             # print('\n\n')
+# #             # print(f'X head: {X.head()}\n\n')
+# #             # print(f'y head: {y.head()}\n\n')
+# #             # print(f'y head: {np.unique(y)}')
+# #             # print(f'data keys: {type(X.keys())}\n\n')
+# #             # print(data.data.features.dtypes.unique())
 
-#             # gh
+# #             # gh
 
 
             
@@ -300,14 +317,41 @@ for dataset in myDatasets:
 #                     saveHere = os.path.join(output_path, f'{numEstimators}est_{depth}deep_{dataset}_RF')
 
 #                     # add header to data file
-#                     if runNumber == 1:
-#                         with open(saveHere, 'a') as output_file:
-#                             # output_file.write(f"accuracy\tprecision\trecall\tf1\tfpr\ttpr\tthresholds\n")    
-#                             output_file.write(f"accuracy\tprecision\trecall\tf1\tconfMatrxVars\n")    
+#                     # if runNumber == 1:
+#                     #     with open(saveHere, 'a') as output_file:
+#                     #         # output_file.write(f"accuracy\tprecision\trecall\tf1\tfpr\ttpr\tthresholds\n")    
+#                     #         output_file.write(f"accuracy\tprecision\trecall\tf1\tconfMatrxVars\n")    
 
 
 #                     # Split the data into training and testing sets
 #                     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+
+#                     X_train_tensor = tf.convert_to_tensor(X_train)
+#                     X_test_tensor = tf.convert_to_tensor(X_test)
+
+#                     # Reshape input data for LSTM layers: Add an additional dimension of length 1
+#                     X_train_tensor = X_train_tensor.reshape(X_train_tensor.shape[0], 1, X_train_tensor.shape[1])
+#                     X_test_tensor = X_test_tensor.reshape(X_test_tensor.shape[0], 1, X_test_tensor.shape[1])
+
+#                     y_train_tensor = tf.convert_to_tensor(y_train)
+#                     y_test_tensor = tf.convert_to_tensor(y_test)
+
+#                     # number of neruansd and number of layers
+#                     model = Sequential()
+#                     model.add(LSTM(32, input_shape=(X_train_tensor.shape[1:]), activation='relu', return_sequences=True)) # of cells
+#                     model.add(Dropout(0.2))
+
+#                     model.add(LSTM(16, activation='relu'))
+#                     model.add(Dropout(0.2))
+
+
+#                     model.add(Dense(X.shape[1], activation='sigmoid'))
+
+#                     opt = tf.keras.optimizers.legacy.Adam(lr=1e-3)
+#                     model.compile(loss='mse', optimizer=opt, metrics=['accuracy'])                     
+#                     model.fit(X_train_tensor, y_train_tensor, epochs=4, validation_data=(X_test_tensor,y_test_tensor))
+
+                    ## need to test
 
 #                     # Initialize the random forest
 #                     rf = RandomForestClassifier(n_estimators=numEstimators, max_depth=depth, max_features='sqrt', bootstrap=True, oob_score=True)
