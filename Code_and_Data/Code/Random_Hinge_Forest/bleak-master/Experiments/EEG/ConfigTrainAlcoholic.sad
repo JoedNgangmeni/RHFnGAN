@@ -1,5 +1,0 @@
-include "Config.sad"
-
-numClasses=2;
-imageList=$dataRoot + "/alcoholicTrainList.txt";
-labelsCsv=$dataRoot + "/alcoholicTrainLabels.csv";

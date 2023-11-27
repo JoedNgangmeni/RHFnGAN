@@ -1,3 +1,0 @@
-include "Config.sad"
-dataBasePath = "../../../../Data/poker/poker_validation.lmdb";
-

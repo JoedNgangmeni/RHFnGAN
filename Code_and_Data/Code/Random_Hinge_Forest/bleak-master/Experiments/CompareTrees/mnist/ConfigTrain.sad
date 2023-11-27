@@ -1,2 +1,0 @@
-include "Config.sad"
-dataBasePath = "../../../../Data/mnist/mnist_train.lmdb";

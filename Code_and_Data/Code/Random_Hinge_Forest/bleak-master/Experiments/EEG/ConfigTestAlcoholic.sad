@@ -1,6 +1,0 @@
-include "Config.sad"
-
-numClasses=2;
-batchSize=9;
-imageList=$dataRoot + "/alcoholicTestList.txt";
-labelsCsv=$dataRoot + "/alcoholicTestLabels.csv";
