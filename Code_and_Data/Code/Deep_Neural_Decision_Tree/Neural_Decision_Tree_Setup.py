@@ -126,4 +126,5 @@ def run_experiment(model):
     print(f"Test accuracy: {round(accuracy * 100, 2)}%")
 
 
-print("Neural_Decision_Tree_Setup.py file is compiling...\n")
+def isWorking():
+    print("Neural_Decision_Tree_Setup.py file is compiling...\n")
