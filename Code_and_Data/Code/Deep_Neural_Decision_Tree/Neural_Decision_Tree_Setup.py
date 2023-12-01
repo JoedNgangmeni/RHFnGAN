@@ -124,3 +124,6 @@ def run_experiment(model):
 
     _, accuracy = model.evaluate(test_dataset)
     print(f"Test accuracy: {round(accuracy * 100, 2)}%")
+
+
+print("Neural_Decision_Tree_Setup.py file is compiling...\n")
