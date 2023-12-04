@@ -22,17 +22,17 @@ specOut =""
 current_date = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
 
 # LOOP CONTROLLERS
-myDatasets = ['cali', 'air', 'fb' , 'aba', 'income', 'diabetes', 'cancer', 'wine', 'HAR' ]
-N_ESTIMATORS = [1, 10, 50, 100, 150, 200]
-DEPTH = [1, 3, 5, 7, 10, 15, 20]
-MAX_RUNS = 50
+# myDatasets = ['cali', 'air', 'fb' , 'aba', 'income', 'diabetes', 'cancer', 'wine', 'HAR' ]
+# N_ESTIMATORS = [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
+# DEPTH = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+# MAX_RUNS = 25
 
 
 # QUICK TEST CONTROLS
-# MAX_RUNS = 3
-# N_ESTIMATORS = [50]
-# DEPTH = [1]
-# myDatasets = [  'wine' ]
+MAX_RUNS = 3
+N_ESTIMATORS = [2]
+DEPTH = [1]
+myDatasets = [  'income' ]
 
 
 regressionDatasets = ['cali', 'air', 'fb' , 'aba']
@@ -114,6 +114,7 @@ for dataset in myDatasets:
                     output_path = os.path.join(base_dir, outpDir, specOut)
                     # print(output_path)
                     saveHere = os.path.join(output_path, f'{numEstimators}est_{depth}deep_{dataset}_RF')
+                    print(f'{saveHere}\n')
 
 
                     # add header to data file
@@ -267,6 +268,8 @@ for dataset in myDatasets:
                     output_path = os.path.join(base_dir, outpDir, specOut)
                     # print(output_path)
                     saveHere = os.path.join(output_path, f'{numEstimators}est_{depth}deep_{dataset}_RF')
+                    print(f'{saveHere}\n')
+
 
                     # add header to data file
                     if runNumber == 1:
