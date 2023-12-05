@@ -22,17 +22,17 @@ specOut =""
 current_date = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
 
 # LOOP CONTROLLERS
-# myDatasets = ['cali', 'air', 'fb' , 'aba', 'income', 'diabetes', 'cancer', 'wine', 'HAR' ]
-# N_ESTIMATORS = [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
-# DEPTH = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
-# MAX_RUNS = 25
+myDatasets = ['income', 'diabetes', 'cancer', 'wine', 'HAR' ]
+N_ESTIMATORS = [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
+DEPTH = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+MAX_RUNS = 25
 
 
 # QUICK TEST CONTROLS
-MAX_RUNS = 3
-N_ESTIMATORS = [2]
-DEPTH = [1]
-myDatasets = [  'income' ]
+# MAX_RUNS = 3
+# N_ESTIMATORS = [2]
+# DEPTH = [1]
+# myDatasets = [  'income' ]
 
 
 regressionDatasets = ['cali', 'air', 'fb' , 'aba']
@@ -275,7 +275,7 @@ for dataset in myDatasets:
                     if runNumber == 1:
                         with open(saveHere, 'a') as output_file:
                             # output_file.write(f"accuracy\tprecision\trecall\tf1\tfpr\ttpr\tthresholds\n")    
-                            output_file.write(f"accuracy\tprecision\trecall\tf1\tconfMatrxVars\n")    
+                            output_file.write(f"accuracy\tprecision\trecall\tf1\toob\tconfMatrxVars\n")    
 
 
                     # Split the data into training and testing sets
@@ -298,6 +298,9 @@ for dataset in myDatasets:
 
                     # measure recall 
                     recall = recall_score(y_test, y_pred, average='weighted', zero_division=0)
+
+                    # Calculate OOB
+                    oob = 1 - rf.oob_score_
 
                     # measure f1 
                     f1 = f1_score(y_test, y_pred, average='weighted' , zero_division=0)
@@ -329,18 +332,23 @@ for dataset in myDatasets:
 
                     # create confusion matrix
                     conf_matrix = confusion_matrix(y_test, y_pred)
-                    # print(conf_matrix.shape)
+                    # print(f'conf_matrix.shape {conf_matrix.shape}\n')
+                    print(f'conf_matrix {conf_matrix}\n')
+
+
                 
 
                     # Save data
                     with open(saveHere, 'a') as output_file:
                         # output_file.write(f"{accuracy}\t{precision}\t{recall}\t{f1}\t{fpr}\t{tpr}\t{thresholds_str}\n")
-                        output_file.write(f"{accuracy}\t{precision}\t{recall}\t{f1}\t")
-                        for row in conf_matrix:
+                        output_file.write(f"{accuracy}\t{precision}\t{recall}\t{f1}\t{oob}\t")
+                        for i, row in enumerate(conf_matrix):
                             output_file.write(",".join(map(str, row)))
+                            if i < len(conf_matrix) - 1:
+                                output_file.write(",")  # Add a comma if it's not the last row
                         output_file.write("\n")
                     runNumber +=1
-    
+
 
 
             
