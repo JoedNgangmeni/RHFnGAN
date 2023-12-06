@@ -58,19 +58,19 @@ def process_subdirectory(subdirectory_path):
             #     os.rename(entry_path, new_entry_path)
 
             # split file name by '_'
-            fName = entry_path.split('_')
+            fName = entry.split('_')
 
             # Assign last 4 values of the split, should be numtrees, treedepth, datasetname, modeltype
-            indicator = fName[-6:-1]
-            numTrees = int(indicator[0].removesuffix('est'))
-            treeDepth = int(indicator[1].removesuffix('deep'))
-            whichData = indicator[2]
-            whichModel = indicator[3]
-            whichTask = indicator[4]
+            attrName = fName[1:-1]
+            numTrees = int(attrName[0].removesuffix('est'))
+            treeDepth = int(attrName[1].removesuffix('deep'))
+            whichData = attrName[2]
+            whichModel = attrName[3]
+            whichTask = attrName[4]
 
             # myErr = process_data_file(entry_path)[1]
 
-            print(f'indicator : {whichTask}\n\n\n\n')
+            print(f'attrName : {numTrees}\n\n\n\n')
 
 
     # # Combine all processed data into a single DataFrame
