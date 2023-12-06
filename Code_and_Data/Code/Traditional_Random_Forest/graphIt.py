@@ -19,21 +19,19 @@ def process_data_file(file_path):
     if data.shape[1] == 5: # regression data
         # print(file_path)
         myColumns = ['r2', 'oob', 'mae']
-        allErrs = pd.DataFrame(columns=myColumns)
+        bestErrs = pd.DataFrame(columns=myColumns)
+        avgErrs = pd.DataFrame(columns=myColumns)
+
 
     #   print(f'Regression Head {myFrame.columns}')
         for metric in myColumns:
             best_row = round(data.loc[data[metric].idxmax()], 5)
-            # allErrs = allErrs.append(best_row[myColumns], ignore_index=True)
+            bestErrs = pd.concat([bestErrs, best_row[myColumns].to_frame().T], ignore_index=True)
 
-            allErrs = pd.concat([allErrs, best_row[myColumns].to_frame().T], ignore_index=True)
-            # print(f'allErrs , {allErrs}\n\n\n\n')
-
-
-            # allErrs = allErrs[f'{metric}'].append(best_row[metric], ignore_index=True)
-            # allErrs = allErrs.append(best_row[myColumns], ignore_index=True)
+            avg_row = round(data.mean(), 5)
+            avgErrs = pd.concat([avgErrs, avg_row[myColumns].to_frame().T], ignore_index=True)
         
-        return allErrs
+        return bestErrs, avgErrs
     # else:
     #     classProcess(data)
     
@@ -51,10 +49,27 @@ def process_subdirectory(subdirectory_path):
             continue
         elif os.path.isfile(entry_path):
             # If it's a file, process it
-            # print(entry_path)
-            myErr = process_data_file(entry_path)
-            fName = entry_path.split('_')
-            print(f'fName , {fName}\n\n\n\n')
+            data = pd.read_csv(entry_path, sep='\t', header=0)
+            if data.shape[1] == 5: # regression data
+                new_entry_path = os.path.join(entry_path, f'{entry}_reg')
+                os.rename(entry_path, new_entry_path)
+            else:
+                new_entry_path = os.path.join(entry_path, f'{entry}_cls')
+                os.rename(entry_path, new_entry_path)
+
+            # # split file name by '_'
+            # fName = entry_path.split('_')
+
+            # # Assign last 4 values of the split, should be numtrees, treedepth, datasetname, modeltype
+            # indicator = fName[-4:]
+            # numTrees = int(indicator[0].removesuffix('est'))
+            # treeDepth = int(indicator[1].removesuffix('deep'))
+            # whichData = indicator[2]
+            # whichModel = indicator[3]
+
+            # myErr = process_data_file(entry_path)[1]
+
+            print(f'indicator : {myErr}\n\n\n\n')
 
 
     # # Combine all processed data into a single DataFrame
