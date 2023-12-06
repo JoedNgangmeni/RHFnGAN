@@ -49,28 +49,28 @@ def process_subdirectory(subdirectory_path):
             continue
         elif os.path.isfile(entry_path):
             # If it's a file, process it
-            data = pd.read_csv(entry_path, sep='\t', header=0)
-            if data.shape[1] == 5: # regression data
-                new_entry_path = os.path.join(subdirectory_path, f'{entry}_')
-                os.rename(entry_path, new_entry_path)
-            else:
-                new_entry_path = os.path.join(subdirectory_path, f'{entry}_')
-                os.rename(entry_path, new_entry_path)
+            # data = pd.read_csv(entry_path, sep='\t', header=0)
+            # if data.shape[1] == 5: # regression data
+            #     new_entry_path = os.path.join(subdirectory_path, f'{entry}_')
+            #     os.rename(entry_path, new_entry_path)
+            # else:
+            #     new_entry_path = os.path.join(subdirectory_path, f'{entry}_')
+            #     os.rename(entry_path, new_entry_path)
 
-            # # split file name by '_'
-            # fName = entry_path.split('_')
+            # split file name by '_'
+            fName = entry_path.split('_')
 
-            # # Assign last 4 values of the split, should be numtrees, treedepth, datasetname, modeltype
-            # indicator = fName[-5:]
-            # numTrees = int(indicator[0].removesuffix('est'))
-            # treeDepth = int(indicator[1].removesuffix('deep'))
-            # whichData = indicator[2]
-            # whichModel = indicator[3]
-            # whichTask = indicator[4]
+            # Assign last 4 values of the split, should be numtrees, treedepth, datasetname, modeltype
+            indicator = fName[-6:-1]
+            numTrees = int(indicator[0].removesuffix('est'))
+            treeDepth = int(indicator[1].removesuffix('deep'))
+            whichData = indicator[2]
+            whichModel = indicator[3]
+            whichTask = indicator[4]
 
             # myErr = process_data_file(entry_path)[1]
 
-            # print(f'indicator : {myErr}\n\n\n\n')
+            print(f'indicator : {whichTask}\n\n\n\n')
 
 
     # # Combine all processed data into a single DataFrame
