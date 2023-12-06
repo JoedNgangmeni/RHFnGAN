@@ -10,32 +10,30 @@ outputPath = os.path.join(base_dir, outputDir)
 figureDir = "Figures"
 figurePath = os.path.join(base_dir, figureDir)
 
-def isForRegression( myFrame = pd.DataFrame()):
-    if myFrame.shape[1] == 5:
-        return True
-    else:
-        return False
 
-def regProcess(myFrame = pd.DataFrame()):
-    myColumns = ['r2', 'oob', 'mae']
-    # print(f'Regression Head {myFrame.columns}')
-    for metric in myColumns:
-        best_row = round(myFrame.loc[myFrame[metric].idxmax()], 3)
-        print(best_row)
-
-
-def classProcess(myFrame = pd.DataFrame()):
-    myColumns = ['accuracy', 'precision', 'recall', 'f1', 'oob', 'confMatrxVars']
-
-    # print(f'Classification Head {myFrame.columns}')
 
 def process_data_file(file_path):
     # Your code to process a single data file goes here
     # Return the processed data (e.g., a DataFrame)
     data = pd.read_csv(file_path, sep='\t', header=0)
-    if isForRegression(data):
-        print(file_path)
-        regProcess(data)
+    if data.shape[1] == 5: # regression data
+        # print(file_path)
+        myColumns = ['r2', 'oob', 'mae']
+        allErrs = pd.DataFrame(columns=myColumns)
+
+    #   print(f'Regression Head {myFrame.columns}')
+        for metric in myColumns:
+            best_row = round(data.loc[data[metric].idxmax()], 5)
+            # allErrs = allErrs.append(best_row[myColumns], ignore_index=True)
+
+            allErrs = pd.concat([allErrs, best_row[myColumns].to_frame().T], ignore_index=True)
+            # print(f'allErrs , {allErrs}\n\n\n\n')
+
+
+            # allErrs = allErrs[f'{metric}'].append(best_row[metric], ignore_index=True)
+            # allErrs = allErrs.append(best_row[myColumns], ignore_index=True)
+        
+        return allErrs
     # else:
     #     classProcess(data)
     
@@ -46,7 +44,7 @@ def process_subdirectory(subdirectory_path):
     # Iterate over all entries in the subdirectory
     for entry in os.listdir(subdirectory_path):
         entry_path = os.path.join(subdirectory_path, entry)
-
+        
         # Check if the entry is a directory
         if os.path.isdir(entry_path):
             # If it's a directory, ignore it or handle it as needed
@@ -54,7 +52,10 @@ def process_subdirectory(subdirectory_path):
         elif os.path.isfile(entry_path):
             # If it's a file, process it
             # print(entry_path)
-            process_data_file(entry_path)
+            myErr = process_data_file(entry_path)
+            fName = entry_path.split('_')
+            print(f'fName , {fName}\n\n\n\n')
+
 
     # # Combine all processed data into a single DataFrame
     # combined_data = pd.concat(processed_data, ignore_index=True)
