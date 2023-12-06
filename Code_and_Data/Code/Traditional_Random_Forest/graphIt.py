@@ -51,10 +51,10 @@ def process_subdirectory(subdirectory_path):
             # If it's a file, process it
             data = pd.read_csv(entry_path, sep='\t', header=0)
             if data.shape[1] == 5: # regression data
-                new_entry_path = os.path.join(subdirectory_path, f'{entry}_reg')
+                new_entry_path = os.path.join(subdirectory_path, f'{entry}_')
                 os.rename(entry_path, new_entry_path)
             else:
-                new_entry_path = os.path.join(subdirectory_path, f'{entry}_cls')
+                new_entry_path = os.path.join(subdirectory_path, f'{entry}_')
                 os.rename(entry_path, new_entry_path)
 
             # # split file name by '_'
