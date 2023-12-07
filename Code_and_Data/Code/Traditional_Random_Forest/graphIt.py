@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 base_dir = os.path.dirname(os.path.abspath(__file__))  # Gets the directory where your script is
@@ -20,8 +21,8 @@ clsErrCol = ['accuracy', 'precision', 'recall', 'f1', 'oob']
 
 
 def process_data_file(file_path):
-    # Your code to process a single data file goes here
-    # Return the processed data (e.g., a DataFrame)
+    # Process a single data file
+    # Return the processed data as DataFrame
     data = pd.read_csv(file_path, sep='\t', header=0)
     avgErrs = pd.DataFrame()
 
@@ -40,13 +41,12 @@ def process_data_file(file_path):
         avgErrs['f1'] = [data['f1'].mean()]
         avgErrs['oob'] = [data['oob'].mean()]
 
-
     return avgErrs
     
 def process_subdirectory(subdirectory_path):
-    # Initialize an empty list to store processed data from each file
-    procRegData = pd.DataFrame(columns=regErrCol)
-    procClsData = pd.DataFrame(columns=clsErrCol)
+    # Iterate over all stored data, Ouput to files ----> numTrees in the run \t treeDepth for that run \t avg err for that numTrees and treeDepth \n
+    # Each average error metric hs its own file
+    # Each dataset has a group of avg error metric files 
 
     # Iterate over all entries in the subdirectory
     for entry in os.listdir(subdirectory_path):
@@ -57,14 +57,6 @@ def process_subdirectory(subdirectory_path):
             # If it's a directory, ignore it or handle it as needed
             continue
         elif os.path.isfile(entry_path):
-            # If it's a file, process it
-            # data = pd.read_csv(entry_path, sep='\t', header=0)
-            # if data.shape[1] == 5: # regression data
-            #     new_entry_path = os.path.join(subdirectory_path, f'{entry}_')
-            #     os.rename(entry_path, new_entry_path)
-            # else:
-            #     new_entry_path = os.path.join(subdirectory_path, f'{entry}_')
-            #     os.rename(entry_path, new_entry_path)
 
             # split file name by '_'
             fName = entry.split('_')
@@ -78,41 +70,25 @@ def process_subdirectory(subdirectory_path):
             whichTask = attrName[4]
 
             figSubPath = os.path.join(figurePath, f'{whichData}Output')
-            saveHere = os.path.join(figSubPath, f'_{whichModel}_{whichTask}_avg_Errs_{whichData}')
 
             avgErrs = process_data_file(entry_path)
 
-            # if 'r2' in avgErrs.columns: # Regression
-            #     procRegData.loc[treeDepth] = avgErrs
+        '''YOU CAN ONLY HAVE ONE OF THE FOLLOWING FOR LOOPS AT A TIME  '''
 
-            # elif 'f1' in avgErrs.columns: # classification
-            #     procClsData.loc[treeDepth] = avgErrs
+        # CLEAR EXISTING DATA
+        # for col in avgErrs.columns:
+        #     saveHere = os.path.join(figSubPath, f'_avg_{col}_{whichData}_{whichModel}_{whichTask}')
+        #     with open(saveHere, 'w'):
+        #         pass 
         
-        # print(f'avgErr: {avgErrs.flatten()}\n')
-        print(f'procRegData: {procClsData.columns}\n')
+        # # GET NEW DATA
+        # for col in avgErrs.columns:
+        #     saveHere = os.path.join(figSubPath, f'_avg_{col}_{whichData}_{whichModel}_{whichTask}')
+        #     with open(saveHere, 'a') as myFigData:
+        #         myFigData.write(f"{numTrees}\t{treeDepth}\t{avgErrs.loc[0, col]}\n")
 
+        '''YOU CAN ONLY HAVE ONE OF THE ABOVE FOR LOOPS AT A TIME  '''
 
-    if 'r2' in avgErrs.columns: # Regression
-        with open(saveHere, 'a') as myFigData:
-            myFigData.write(f"r2\trmse\tmse\tmae\toob\n")   
-
-    elif 'f1' in avgErrs.columns: # classification
-        with open(saveHere, 'a') as myFigData:
-            myFigData.write(f"accuracy\tprecision\trecall\tf1\toob\n")   
-        
-
-    
-
-    # myGraph = plt.axes(projection='3d')
-
-    # # Combine all processed data into a single DataFrame
-    # combined_data = pd.concat(processed_data, ignore_index=True)
-
-    # # Create a graph using the combined data
-    # plt.figure()
-    # # Your code to create a graph goes here
-    # plt.title(f"Graph for {os.path.basename(subdirectory_path)}")
-    # plt.show()
 
 def process_directory(directory_path):
     # Iterate over all entries in the directory
