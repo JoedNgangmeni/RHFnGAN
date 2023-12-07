@@ -18,22 +18,49 @@ def process_data_file(file_path):
     data = pd.read_csv(file_path, sep='\t', header=0)
     if data.shape[1] == 5: # regression data
         # print(file_path)
-        myColumns = ['r2', 'oob', 'mae']
+        myColumns = ['r2', 'rmse', 'mse', 'oob', 'mae']
         bestErrs = pd.DataFrame(columns=myColumns)
         avgErrs = pd.DataFrame(columns=myColumns)
 
 
     #   print(f'Regression Head {myFrame.columns}')
         for metric in myColumns:
-            best_row = round(data.loc[data[metric].idxmax()], 5)
+            worst_row = data.loc[data[metric].idxmin()]
+            worstErrs = pd.concat([worstErrs, worst_row[myColumns].to_frame().T], ignore_index=True)
+            
+            avg_row = data.mean()
+            avgErrs = pd.concat([avgErrs, avg_row[myColumns].to_frame().T], ignore_index=True)
+
+            best_row = data.loc[data[metric].idxmax()]
             bestErrs = pd.concat([bestErrs, best_row[myColumns].to_frame().T], ignore_index=True)
 
-            avg_row = round(data.mean(), 5)
-            avgErrs = pd.concat([avgErrs, avg_row[myColumns].to_frame().T], ignore_index=True)
         
-        return bestErrs, avgErrs
-    # else:
-    #     classProcess(data)
+        return worstErrs, avgErrs, bestErrs
+    else:
+        myColumns = ['accuracy', 'precision', 'recall', 'f1', 'oob']
+        bestErrs = pd.DataFrame(columns=myColumns)
+        avgErrs = pd.DataFrame(columns=myColumns)
+        myDF = pd.DataFrame()
+        myDF['accuracy'] = pd.Series()
+        myDF['precision'] = pd.Series()
+        myDF['recall'] = pd.Series() 
+        myDF['f1'] = pd.Series() 
+        myDF['oob'] = pd.Series()
+        myDF['confMatrxVars'] = pd.Series()
+
+    #   print(f'Regression Head {myFrame.columns}')
+        for metric in myColumns:
+
+
+            worst_row = data.loc[data[metric].idxmin()]
+            worstErrs = pd.concat([worstErrs, worst_row[myColumns].to_frame().T], ignore_index=True)
+            
+            avg_row = data.mean()
+            avgErrs = pd.concat([avgErrs, avg_row[myColumns].to_frame().T], ignore_index=True)
+
+            best_row = data.loc[data[metric].idxmax()]
+            bestErrs = pd.concat([bestErrs, best_row[myColumns].to_frame().T], ignore_index=True)
+        return worstErrs, avgErrs, bestErrs
     
 def process_subdirectory(subdirectory_path):
     # Initialize an empty list to store processed data from each file
@@ -68,10 +95,11 @@ def process_subdirectory(subdirectory_path):
             whichModel = attrName[3]
             whichTask = attrName[4]
 
-            # myErr = process_data_file(entry_path)[1]
+            # myErr = process_data_file(entry_path)
 
-            print(f'attrName : {numTrees}\n\n\n\n')
+            print(f'attrName : {attrName}\n\n\n\n')
 
+    # myGraph = plt.axes(projection='3d')
 
     # # Combine all processed data into a single DataFrame
     # combined_data = pd.concat(processed_data, ignore_index=True)

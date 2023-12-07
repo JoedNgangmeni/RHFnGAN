@@ -150,8 +150,8 @@ for dataset in myDatasets:
                     # Calculate OOB
                     oob = 1 - rf.oob_score_
 
-                    with open(saveHere, 'a') as output_file:
-                        output_file.write(f"{r2}\t{rmse}\t{mse}\t{oob}\t{mae}\n")
+                    # with open(saveHere, 'a') as output_file:
+                    #     output_file.write(f"{r2}\t{rmse}\t{mse}\t{oob}\t{mae}\n")
 
                     runNumber +=1
     
@@ -333,20 +333,20 @@ for dataset in myDatasets:
                     # create confusion matrix
                     conf_matrix = confusion_matrix(y_test, y_pred)
                     # print(f'conf_matrix.shape {conf_matrix.shape}\n')
-                    print(f'conf_matrix {conf_matrix}\n')
+                    print(f'conf_matrix {conf_matrix.shape}\n')
 
 
                 
 
                     # Save data
-                    with open(saveHere, 'a') as output_file:
-                        # output_file.write(f"{accuracy}\t{precision}\t{recall}\t{f1}\t{fpr}\t{tpr}\t{thresholds_str}\n")
-                        output_file.write(f"{accuracy}\t{precision}\t{recall}\t{f1}\t{oob}\t")
-                        for i, row in enumerate(conf_matrix):
-                            output_file.write(",".join(map(str, row)))
-                            if i < len(conf_matrix) - 1:
-                                output_file.write(",")  # Add a comma if it's not the last row
-                        output_file.write("\n")
+                    # with open(saveHere, 'a') as output_file:
+                    #     # output_file.write(f"{accuracy}\t{precision}\t{recall}\t{f1}\t{fpr}\t{tpr}\t{thresholds_str}\n")
+                    #     output_file.write(f"{accuracy}\t{precision}\t{recall}\t{f1}\t{oob}\t")
+                    #     for i, row in enumerate(conf_matrix):
+                    #         output_file.write(",".join(map(str, row)))
+                    #         if i < len(conf_matrix) - 1:
+                    #             output_file.write(",")  # Add a comma if it's not the last row
+                    #     output_file.write("\n")
                     runNumber +=1
 
 
