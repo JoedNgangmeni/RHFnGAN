@@ -51,6 +51,20 @@ def process_subdirectory(subdirectory_path):
     # Iterate over all entries in the subdirectory
     for entry in os.listdir(subdirectory_path):
         entry_path = os.path.join(subdirectory_path, entry)
+
+        ''' THESE WERE TO GET A HEADER IN THE FIGURE FILE '''
+
+        # data = pd.read_csv(entry_path , sep='\t', header=0)
+
+        # if 'r2' in data.columns: # Regression Task
+        #     with open(saveHere, 'a') as myFigData:
+        #         myFigData.write(f"numTrees\ttreeDepth\tr2\trmse\tmse\mae\oob\n")
+
+        # if 'f1' in data.columns: # Classification Task
+        #     with open(saveHere, 'a') as myFigData:
+        #         myFigData.write(f"accuracy\tprecision\trecall\tf1\toob\n")
+
+        ''' THESE WERE TO GET A HEADER IN THE FIGURE FILE '''
         
         # Check if the entry is a directory
         if os.path.isdir(entry_path):
@@ -75,19 +89,25 @@ def process_subdirectory(subdirectory_path):
 
         '''YOU CAN ONLY HAVE ONE OF THE FOLLOWING FOR LOOPS AT A TIME  '''
 
-        # CLEAR EXISTING DATA
+        # # CLEAR EXISTING DATA
         # for col in avgErrs.columns:
-        #     saveHere = os.path.join(figSubPath, f'_avg_{col}_{whichData}_{whichModel}_{whichTask}')
+        #     saveHere = os.path.join(figSubPath, f'_avgErr_{whichData}_{whichModel}_{whichTask}')
         #     with open(saveHere, 'w'):
         #         pass 
         
         # # GET NEW DATA
-        # for col in avgErrs.columns:
-        #     saveHere = os.path.join(figSubPath, f'_avg_{col}_{whichData}_{whichModel}_{whichTask}')
-        #     with open(saveHere, 'a') as myFigData:
-        #         myFigData.write(f"{numTrees}\t{treeDepth}\t{avgErrs.loc[0, col]}\n")
+        saveHere = os.path.join(figSubPath, f'_avgErr_{whichData}_{whichModel}_{whichTask}')
+        if 'r2' in avgErrs.columns: # Regression Task
+            with open(saveHere, 'a') as myFigData:
+                myFigData.write(f"{numTrees}\t{treeDepth}\t{avgErrs['r2'].loc[0]}\t{avgErrs['rmse'].loc[0]}\t{avgErrs['mse'].loc[0]}\t{avgErrs['mae'].loc[0]}\t{avgErrs['oob'].loc[0]}\n")
+
+        if 'f1' in avgErrs.columns: # Classification Task
+            with open(saveHere, 'a') as myFigData:
+                myFigData.write(f"{numTrees}\t{treeDepth}\t{avgErrs['accuracy'].loc[0]}\t{avgErrs['precision'].loc[0]}\t{avgErrs['recall'].loc[0]}\t{avgErrs['f1'].loc[0]}\t{avgErrs['oob'].loc[0]}\n")        
+        
 
         '''YOU CAN ONLY HAVE ONE OF THE ABOVE FOR LOOPS AT A TIME  '''
+        
 
 
 def process_directory(directory_path):
@@ -101,9 +121,26 @@ def process_directory(directory_path):
             process_subdirectory(entry_path)
 
 
+def makeGraph(directory_path):
+    # Iterate over all entries in the directory
+    for entry in os.listdir(directory_path):
+        entry_path = os.path.join(directory_path, entry)
+
+        # Check if the entry is a directory
+        if os.path.isdir(entry_path):
+            # If it's a directory, ignore it or handle it as needed
+            makeGraph(entry_path)
+            
+        if os.path.isfile(entry_path):
+            print(entry)
+
+
+
+
 def main():
     # Process the entire directory
-    process_directory(outputPath)
+    # process_directory(outputPath)
+    makeGraph(figurePath)
 
 if __name__ == "__main__":
     main()
