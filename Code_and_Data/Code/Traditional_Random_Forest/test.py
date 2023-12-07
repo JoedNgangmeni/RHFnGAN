@@ -45,14 +45,7 @@ def process_data_file(file_path):
     avgErrs['f1'] = [data['f1'].mean()]
     avgErrs['oob'] = [data['oob'].mean()]
 
-    # Process 'confMatrxVars' column
-    for row in range(data.shape[0]):
-        conf_matrix = list(map(int, data['confMatrxVars'][row].split(',')))
-            # Reshape the list into a square matrix
-        conf_matrix = np.array(conf_matrix).reshape(int(np.sqrt(len(conf_matrix))), -1)
-        # Append the matrix to the list
-        s6.append(conf_matrix)
-
+    
     # Create a DataFrame from the list of confusion matrices
     conf_df = pd.DataFrame(s6)
 

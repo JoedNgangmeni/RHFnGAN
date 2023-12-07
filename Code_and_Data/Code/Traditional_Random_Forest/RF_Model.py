@@ -23,15 +23,15 @@ current_date = datetime.now().strftime("%d_%m_%Y_%H_%M_%S")
 
 # LOOP CONTROLLERS
 myDatasets = ['income', 'diabetes', 'cancer', 'wine', 'HAR' ]
-N_ESTIMATORS = [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
-DEPTH = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
-MAX_RUNS = 25
+# N_ESTIMATORS = [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200]
+# DEPTH = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+# MAX_RUNS = 25
 
 
 # QUICK TEST CONTROLS
-# MAX_RUNS = 3
-# N_ESTIMATORS = [2]
-# DEPTH = [1]
+MAX_RUNS = 3
+N_ESTIMATORS = [200]
+DEPTH = [20]
 # myDatasets = [  'income' ]
 
 
@@ -118,9 +118,9 @@ for dataset in myDatasets:
 
 
                     # add header to data file
-                    if runNumber == 1:
-                        with open(saveHere, 'a') as output_file:
-                            output_file.write(f"r2\trmse\tmse\toob\tmae\n")    
+                    # if runNumber == 1:
+                        # with open(saveHere, 'a') as output_file:
+                        #     output_file.write(f"r2\trmse\tmse\toob\tmae\n")    
 
 
                     # Split the data into training and testing sets
@@ -272,10 +272,10 @@ for dataset in myDatasets:
 
 
                     # add header to data file
-                    if runNumber == 1:
-                        with open(saveHere, 'a') as output_file:
-                            # output_file.write(f"accuracy\tprecision\trecall\tf1\tfpr\ttpr\tthresholds\n")    
-                            output_file.write(f"accuracy\tprecision\trecall\tf1\toob\tconfMatrxVars\n")    
+                    # if runNumber == 1:
+                    #     with open(saveHere, 'a') as output_file:
+                    #         # output_file.write(f"accuracy\tprecision\trecall\tf1\tfpr\ttpr\tthresholds\n")    
+                    #         output_file.write(f"accuracy\tprecision\trecall\tf1\toob\tconfMatrxVars\n")    
 
 
                     # Split the data into training and testing sets

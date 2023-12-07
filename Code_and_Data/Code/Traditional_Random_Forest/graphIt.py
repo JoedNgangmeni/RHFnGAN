@@ -10,61 +10,43 @@ outputPath = os.path.join(base_dir, outputDir)
 figureDir = "Figures"
 figurePath = os.path.join(base_dir, figureDir)
 
+regressionDatasets = ['cali', 'air', 'fb' , 'aba']
+classificationDatasets = ['income', 'diabetes', 'cancer', 'wine', 'HAR']
+
+allDatasets = regressionDatasets + classificationDatasets
+
+regErrCol = ['r2', 'rmse', 'mse', 'mae', 'oob']
+clsErrCol = ['accuracy', 'precision', 'recall', 'f1', 'oob']
 
 
 def process_data_file(file_path):
     # Your code to process a single data file goes here
     # Return the processed data (e.g., a DataFrame)
     data = pd.read_csv(file_path, sep='\t', header=0)
+    avgErrs = pd.DataFrame()
+
     if data.shape[1] == 5: # regression data
         # print(file_path)
-        myColumns = ['r2', 'rmse', 'mse', 'oob', 'mae']
-        bestErrs = pd.DataFrame(columns=myColumns)
-        avgErrs = pd.DataFrame(columns=myColumns)
-
-
-    #   print(f'Regression Head {myFrame.columns}')
-        for metric in myColumns:
-            worst_row = data.loc[data[metric].idxmin()]
-            worstErrs = pd.concat([worstErrs, worst_row[myColumns].to_frame().T], ignore_index=True)
-            
-            avg_row = data.mean()
-            avgErrs = pd.concat([avgErrs, avg_row[myColumns].to_frame().T], ignore_index=True)
-
-            best_row = data.loc[data[metric].idxmax()]
-            bestErrs = pd.concat([bestErrs, best_row[myColumns].to_frame().T], ignore_index=True)
-
+        avgErrs['r2'] = [data['r2'].mean()]
+        avgErrs['rmse'] = [data['rmse'].mean()]
+        avgErrs['mse'] = [data['mse'].mean()]
+        avgErrs['mae'] = [data['mae'].mean()]
+        avgErrs['oob'] = [data['oob'].mean()]
         
-        return worstErrs, avgErrs, bestErrs
-    else:
-        myColumns = ['accuracy', 'precision', 'recall', 'f1', 'oob']
-        bestErrs = pd.DataFrame(columns=myColumns)
-        avgErrs = pd.DataFrame(columns=myColumns)
-        myDF = pd.DataFrame()
-        myDF['accuracy'] = pd.Series()
-        myDF['precision'] = pd.Series()
-        myDF['recall'] = pd.Series() 
-        myDF['f1'] = pd.Series() 
-        myDF['oob'] = pd.Series()
-        myDF['confMatrxVars'] = pd.Series()
-
-    #   print(f'Regression Head {myFrame.columns}')
-        for metric in myColumns:
+    else: # Classification data
+        avgErrs['accuracy'] = [data['accuracy'].mean()]
+        avgErrs['precision'] = [data['precision'].mean()]
+        avgErrs['recall'] = [data['recall'].mean()]
+        avgErrs['f1'] = [data['f1'].mean()]
+        avgErrs['oob'] = [data['oob'].mean()]
 
 
-            worst_row = data.loc[data[metric].idxmin()]
-            worstErrs = pd.concat([worstErrs, worst_row[myColumns].to_frame().T], ignore_index=True)
-            
-            avg_row = data.mean()
-            avgErrs = pd.concat([avgErrs, avg_row[myColumns].to_frame().T], ignore_index=True)
-
-            best_row = data.loc[data[metric].idxmax()]
-            bestErrs = pd.concat([bestErrs, best_row[myColumns].to_frame().T], ignore_index=True)
-        return worstErrs, avgErrs, bestErrs
+    return avgErrs
     
 def process_subdirectory(subdirectory_path):
     # Initialize an empty list to store processed data from each file
-    processed_data = []
+    procRegData = pd.DataFrame(columns=regErrCol)
+    procClsData = pd.DataFrame(columns=clsErrCol)
 
     # Iterate over all entries in the subdirectory
     for entry in os.listdir(subdirectory_path):
@@ -95,9 +77,31 @@ def process_subdirectory(subdirectory_path):
             whichModel = attrName[3]
             whichTask = attrName[4]
 
-            # myErr = process_data_file(entry_path)
+            figSubPath = os.path.join(figurePath, f'{whichData}Output')
+            saveHere = os.path.join(figSubPath, f'_{whichModel}_{whichTask}_avg_Errs_{whichData}')
 
-            print(f'attrName : {attrName}\n\n\n\n')
+            avgErrs = process_data_file(entry_path)
+
+            # if 'r2' in avgErrs.columns: # Regression
+            #     procRegData.loc[treeDepth] = avgErrs
+
+            # elif 'f1' in avgErrs.columns: # classification
+            #     procClsData.loc[treeDepth] = avgErrs
+        
+        # print(f'avgErr: {avgErrs.flatten()}\n')
+        print(f'procRegData: {procClsData.columns}\n')
+
+
+    if 'r2' in avgErrs.columns: # Regression
+        with open(saveHere, 'a') as myFigData:
+            myFigData.write(f"r2\trmse\tmse\tmae\toob\n")   
+
+    elif 'f1' in avgErrs.columns: # classification
+        with open(saveHere, 'a') as myFigData:
+            myFigData.write(f"accuracy\tprecision\trecall\tf1\toob\n")   
+        
+
+    
 
     # myGraph = plt.axes(projection='3d')
 
