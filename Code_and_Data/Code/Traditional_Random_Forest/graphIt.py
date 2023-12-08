@@ -132,7 +132,81 @@ def makeGraph(directory_path):
             makeGraph(entry_path)
             
         if os.path.isfile(entry_path):
-            print(entry)
+            # split file name by '_'
+            fName = entry.split('_')
+
+            # Assign last 4 values of the split, should be numtrees, treedepth, datasetname, modeltype
+            attrName = fName[1:]
+            whichData = attrName[1]
+            whichModel = attrName[2]
+            whichTask = attrName[3]
+
+            data = pd.read_csv(entry_path, sep='\t', header=None)
+
+            if whichTask == 'reg': # regression task 
+                data.columns = ['trees', 'depth', 'r2', 'rmse', 'mse', 'mae', 'oob']
+
+            elif whichTask == 'cls': # classification task 
+                data.columns = ['trees', 'depth', 'accuracy', 'precision', 'recall', 'f1', 'oob']
+
+            useCol = data.columns[2:]
+            
+            sortedData = data.sort_values(by=['trees', 'depth'], ascending=[True, True])
+
+            X, Y = sortedData['trees'], sortedData['depth']
+
+            for error in useCol:
+                Z = sortedData[error]
+                fig = plt.figure()
+                ax = fig.add_subplot(111, projection='3d')
+
+                # Plot the 3D surface
+                ax.plot_trisurf(X, Y, Z, cmap='inferno')
+
+                # Set labels
+                ax.set_xlabel('Trees')
+                ax.set_ylabel('Depth')
+                ax.set_zlabel(error)
+
+                extDataNames =['California Housing', 'Italy Air Quality', 'Facebook Comment Volume', 'Abalone', 'Pima Native American Diabetes' , 'Wisconsin Breast Cancer Diagnostic', 'Portugal Wine Quality' , 'Human Activity Recognition', 'Adult Income']
+
+                if whichData == 'cali':
+                    myTitle = extDataNames[0]
+                elif whichData == 'air':
+                    myTitle = extDataNames[1]
+                elif whichData == 'fb':
+                    myTitle = extDataNames[2]
+                elif whichData == 'aba':
+                    myTitle = extDataNames[3]
+                elif whichData == 'diabetes':
+                    myTitle = extDataNames[4]
+                elif whichData == 'cancer':
+                    myTitle = extDataNames[5]
+                elif whichData == 'wine':
+                    myTitle = extDataNames[6]
+                elif whichData == 'HAR':
+                    myTitle = extDataNames[7]
+                elif whichData == 'income':
+                    myTitle = extDataNames[8]
+                
+                ax.set_title(f'{myTitle} {error}')
+                ax.view_init(elev=27, azim=-139)
+
+                
+
+                # Save the graph
+                fig.savefig(os.path.join(directory_path, f'_avg_{whichModel}_{whichTask}_{error}_{whichData}.png'), dpi=600)
+                # plt.show()
+                plt.close(fig)
+
+                # Show the plot
+                # print(ax.elev, ax.azim)
+
+
+
+
+                
+            # print(whichData, whichModel, whichTask)
 
 
 
