@@ -161,7 +161,7 @@ def makeGraph(directory_path):
                 ax = fig.add_subplot(111, projection='3d')
 
                 # Plot the 3D surface
-                ax.plot_trisurf(X, Y, Z, cmap='inferno')
+                ax.plot_trisurf(X, Y, Z, cmap='inferno', edgecolor='k')
 
                 # Set labels
                 ax.set_xlabel('Trees')
@@ -195,8 +195,8 @@ def makeGraph(directory_path):
                 
 
                 # Save the graph
-                fig.savefig(os.path.join(directory_path, f'_avg_{whichModel}_{whichTask}_{error}_{whichData}.png'), dpi=600)
-                # plt.show()
+                # fig.savefig(os.path.join(directory_path, f'_avg_{whichModel}_{whichTask}_{error}_{whichData}.png'), dpi=600)
+                plt.show()
                 plt.close(fig)
 
                 # Show the plot
