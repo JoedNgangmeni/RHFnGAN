@@ -19,6 +19,8 @@ allDatasets = regressionDatasets + classificationDatasets
 regErrCol = ['r2', 'rmse', 'mse', 'mae', 'oob']
 clsErrCol = ['accuracy', 'precision', 'recall', 'f1', 'oob']
 
+risingMetric = ['r2', 'accuracy', 'precision', 'recall', 'f1']
+fallingMetric = ['rmse', 'mse', 'mae', 'oob']
 
 def process_data_file(file_path):
     # Process a single data file
@@ -199,7 +201,7 @@ def makeGraph(directory_path):
 
                 topBestErr = 10
                 topErrs = pd.DataFrame(columns=mySortedData.columns)        
-                if whichTask == 'cls':
+                if error in risingMetric:
                     for _ in range(topBestErr):
                         max_point = mySortedData.loc[mySortedData[error].idxmax()]
                         # Transpose max_point Series to create a row DataFrame
@@ -213,7 +215,7 @@ def makeGraph(directory_path):
                         # topErrs = pd.concat([topErrs, max_point], axis=0, ignore_index=True)
                         mySortedData = mySortedData.drop(mySortedData[mySortedData[error] == max_point[error]].index)
                 
-                elif whichTask == 'reg':
+                elif error in fallingMetric:
                     for _ in range(topBestErr):
                         max_point = mySortedData.loc[mySortedData[error].idxmin()]
                         # Transpose max_point Series to create a row DataFrame
