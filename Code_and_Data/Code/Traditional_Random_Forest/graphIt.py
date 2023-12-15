@@ -132,8 +132,11 @@ def makeGraph(directory_path):
             makeGraph(entry_path)
             
         if os.path.isfile(entry_path):
+            if entry_path == '.DS_Store':
+                pass
             # split file name by '_'
             fName = entry.split('_')
+            print(entry_path)
 
             # Assign last 4 values of the split, should be numtrees, treedepth, datasetname, modeltype
             attrName = fName[1:]
@@ -157,16 +160,84 @@ def makeGraph(directory_path):
 
             for error in useCol:
                 Z = sortedData[error]
-                fig = plt.figure()
-                ax = fig.add_subplot(111, projection='3d')
+                # fig = plt.figure()
+                # ax = fig.add_subplot(111, projection='3d')
 
-                # Plot the 3D surface
-                ax.plot_trisurf(X, Y, Z, cmap='inferno', edgecolor='k')
+                # # Plot the 3D surface
+                # ax.plot_trisurf(X, Y, sortedData[error], cmap='inferno', edgecolor='k', linewidth=0.03)
 
-                # Set labels
-                ax.set_xlabel('Trees')
-                ax.set_ylabel('Depth')
-                ax.set_zlabel(error)
+                # # colors = ['red', 'orangered', 'darkorange', 'orange', 'gold', 'khaki', 'navajowhite', 'white' ]
+                # colors = ['royalblue', 'dodgerblue', 'steelblue', 'deepskyblue', 'lightskyblue', 'skyblue', 'lightsteelblue', 'powderblue']
+
+                mySortedData = sortedData
+                # graphPeak = 1 
+                # for mycolor in colors:
+                #     # Find the highest point
+                    
+                   
+
+                #     # Plot a circle at the x highest point
+                #     label_info = f'{graphPeak} Highest Point - Error: {max_point[error]:.5f}, Trees: {max_point["trees"]}, Depth: {max_point["depth"]}'
+                #     ax.scatter(max_point['trees'], max_point['depth'], max_point[error], color=mycolor, s=100, label=label_info)
+
+                #     # Add an arrow pointing to the highest point
+                #     arrow_length = .2
+                #     ax.quiver(max_point['trees'], max_point['depth'], max_point[error], 0, 0, arrow_length, color=mycolor, arrow_length_ratio=0.1, alpha=0.8)
+
+                #     # Remove the highest data point 
+                #     # sortedData = sortedData.drop(sortedData[error] == max_point[error].index)
+
+                    
+                #     graphPeak +=1
+
+
+
+                # # Set labels
+                # ax.set_xlabel('Trees')
+                # ax.set_ylabel('Depth')
+                # ax.set_zlabel(error)
+
+                topBestErr = 10
+                topErrs = pd.DataFrame(columns=mySortedData.columns)        
+                if whichTask == 'cls':
+                    for _ in range(topBestErr):
+                        max_point = mySortedData.loc[mySortedData[error].idxmax()]
+                        # Transpose max_point Series to create a row DataFrame
+                        max_point_df = pd.DataFrame([max_point.values], columns=mySortedData.columns)
+
+                        max_point_df = round(max_point_df , 4)
+
+                        # Concatenate max_point_df to topErrs
+                        topErrs = pd.concat([topErrs, max_point_df], axis=0, ignore_index=True)
+
+                        # topErrs = pd.concat([topErrs, max_point], axis=0, ignore_index=True)
+                        mySortedData = mySortedData.drop(mySortedData[mySortedData[error] == max_point[error]].index)
+                
+                elif whichTask == 'reg':
+                    for _ in range(topBestErr):
+                        max_point = mySortedData.loc[mySortedData[error].idxmin()]
+                        # Transpose max_point Series to create a row DataFrame
+                        max_point_df = pd.DataFrame([max_point.values], columns=mySortedData.columns)
+
+                        max_point_df = round(max_point_df , 4)
+
+                        # Concatenate max_point_df to topErrs
+                        topErrs = pd.concat([topErrs, max_point_df], axis=0, ignore_index=True)
+
+                        # topErrs = pd.concat([topErrs, max_point], axis=0, ignore_index=True)
+                        mySortedData = mySortedData.drop(mySortedData[mySortedData[error] == max_point[error]].index)
+                
+
+                topErrs = topErrs.sort_values(by=['trees', 'depth'], ascending=[True, True], ignore_index=True)
+
+
+                # Plot the DataFrame as a table
+                fig, ax = plt.subplots(figsize=(8, 4))
+                ax.axis('off')  # Hide axes for better visualization
+                table = ax.table(cellText=topErrs.values, colLabels=topErrs.columns, cellLoc='center', loc='center')
+                table.auto_set_font_size(False)
+                table.set_fontsize(10)  
+
 
                 extDataNames =['California Housing', 'Italy Air Quality', 'Facebook Comment Volume', 'Abalone', 'Pima Native American Diabetes' , 'Wisconsin Breast Cancer Diagnostic', 'Portugal Wine Quality' , 'Human Activity Recognition', 'Adult Income']
 
@@ -188,15 +259,24 @@ def makeGraph(directory_path):
                     myTitle = extDataNames[7]
                 elif whichData == 'income':
                     myTitle = extDataNames[8]
+
+                # ax.set_xlabel('X-axis Label', fontsize=12)  # Adjust the font size of the X-axis label
+                # ax.set_ylabel('Y-axis Label', fontsize=12)  # Adjust the font size of the Y-axis label
+                # ax.set_title('Title', fontsize=14)  # Adjust the font size of the title
+
                 
-                ax.set_title(f'{myTitle} {error}')
-                ax.view_init(elev=27, azim=-139)
+                title = ax.set_title(f'Top {topBestErr} Best Scores on {myTitle} Data')
+                title.set_fontsize(14)
+                # plt.subplots_adjust(top=0.30)
+                # ax.view_init(elev=27, azim=-139)
 
                 
 
                 # Save the graph
                 # fig.savefig(os.path.join(directory_path, f'_avg_{whichModel}_{whichTask}_{error}_{whichData}.png'), dpi=600)
-                plt.show()
+                fig.savefig(os.path.join(directory_path, f'_avg_{whichModel}_{whichTask}_{error}_{whichData}.png'), dpi=600 ,bbox_inches='tight')
+                # plt.legend()
+                # plt.show()
                 plt.close(fig)
 
                 # Show the plot
