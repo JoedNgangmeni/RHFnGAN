@@ -22,7 +22,7 @@ def growRegressor(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     :doc-author: Trelent
     """
     # Split the data into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, shuffle=True)
 
     # Initialize the random forest
     rf = RandomForestRegressor(n_estimators=NUMTREES, max_depth=DEPTH, max_features='sqrt', bootstrap=True, oob_score=True)
@@ -66,7 +66,7 @@ def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     :doc-author: Trelent
     """
     # Split the data into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, shuffle=True)
 
     # Initialize the random forest
     rf = RandomForestClassifier(n_estimators=NUMTREES, max_depth=DEPTH, max_features='sqrt', bootstrap=True, oob_score=True)
