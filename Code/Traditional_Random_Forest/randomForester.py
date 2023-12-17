@@ -7,6 +7,20 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 
 def growRegressor(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
+    """
+    The growRegressor function takes in the number of trees, depth, and data as input.
+    It then splits the data into training and testing sets. It initializes a random forest regressor with
+    the given parameters (number of trees, depth). It trains the model on the training set and makes predictions on 
+    the test set. Finally it calculates R^2 score, MSE, RMSE and MAEs for both OOB error rate as well as test error rate.
+    
+    :param NUMTREES: int: Specify the number of trees in the forest
+    :param DEPTH: int: Determine the depth of each tree in the forest
+    :param X: pd.DataFrame: Pass in the dataframe of features
+    :param y: np.ndarray: Pass the target variable to the function
+
+    :return: The oob score, r^2 score, rmse, mse and mae
+    :doc-author: Trelent
+    """
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30)
 
@@ -38,6 +52,19 @@ def growRegressor(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
 
 
 def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
+    """
+    The growClassifier function takes in the number of trees, depth, and data as input.
+    It then splits the data into training and testing sets. It initializes a random forest classifier with 
+    the given parameters (number of trees, depth). The model is trained on the training set and predictions are made on 
+    the test set. Accuracy is measured using accuracy_score from sklearn's metrics module. Precision is measured using precision_score from sklearn's metrics module. Recall is measured using recall_score from sklearn's metrics module.
+    
+    :param NUMTREES: int: Set the number of trees in the random forest
+    :param DEPTH: int: Set the maximum depth of each tree in the forest
+    :param X: pd.DataFrame: Pass the dataframe of features to the function
+    :param y: np.ndarray: Pass in the labels for the data
+    :return: The following: oob, f1, accuracy, precision, recall, conf_matrix
+    :doc-author: Trelent
+    """
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30)
 
