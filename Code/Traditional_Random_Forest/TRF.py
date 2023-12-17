@@ -18,9 +18,9 @@ NUMTREES = 30
 DEPTH = 5
 X, y = parse.getWineData()
 '''
-oob, r2, rmse, mse, mae = forest.buildRegressor(NUMTREES, DEPTH, X, y)
+oob, r2, rmse, mse, mae = forest.growRegressor(NUMTREES, DEPTH, X, y)
 print(oob, r2, rmse, mse, mae)
 '''
 
-oob, f1, accuracy, precision, recall, conf_matrix = forest.buildClassifier(NUMTREES, DEPTH, X, y)
+oob, f1, accuracy, precision, recall, conf_matrix = forest.growClassifier(NUMTREES, DEPTH, X, y)
 print(oob, f1, accuracy, precision, recall, conf_matrix)

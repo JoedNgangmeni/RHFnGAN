@@ -6,7 +6,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
 
-def buildRegressor(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
+def growRegressor(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30)
 
@@ -37,7 +37,7 @@ def buildRegressor(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     return oob, r2, rmse, mse, mae 
 
 
-def buildClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
+def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30)
 
