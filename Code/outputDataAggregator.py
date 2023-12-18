@@ -33,7 +33,6 @@ def aggMyData(subdirectory_path, output_path):
           
 
 def parseFileName(entry_path): 
-
     # split file name by '_'
     fName = entry_path.split('_')
 
@@ -47,6 +46,8 @@ def parseFileName(entry_path):
     print('my Fname\t',attrName,'\n')
 
     return numTrees, treeDepth, whichModel, whichTask, whichData
+
+
 
 def processFile(entry_path):
     data = pd.read_csv(entry_path, sep='\t')
