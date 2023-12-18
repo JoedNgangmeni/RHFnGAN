@@ -94,6 +94,6 @@ def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
 
     # create confusion matrix
     conf_matrix = confusion_matrix(y_test, y_pred)
-    # flatConfMatrix = conf_matrix.ravel()
+    flatConfMatrix = conf_matrix.ravel()
 
-    return oob, f1, accuracy, precision, recall, conf_matrix
+    return oob, f1, accuracy, precision, recall, flatConfMatrix
