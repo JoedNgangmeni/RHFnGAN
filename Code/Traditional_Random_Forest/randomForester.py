@@ -79,21 +79,27 @@ def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
 
     # measure Accuracy 
     accuracy = accuracy_score(y_test, y_pred)
+    # print('acc:\t', accuracy)
 
     # measure precision 
-    precision = precision_score(y_test, y_pred, average="micro", zero_division=0)
+    precision = precision_score(y_test, y_pred, average="weighted", zero_division=0)
+    # print('prec:\t', precision)
 
     # measure recall 
-    recall = recall_score(y_test, y_pred, average='micro', zero_division=0)
+    recall = recall_score(y_test, y_pred, average='weighted', zero_division=0)
+    # print('rec:\t', recall)
+
 
     # Calculate OOB
     oob = 1 - rf.oob_score_
 
     # measure f1 
-    f1 = f1_score(y_test, y_pred, average='micro' , zero_division=0)
+    f1 = f1_score(y_test, y_pred, average='weighted' , zero_division=0)
+    # print('f1:\t', f1, '\n')
+
 
     # create confusion matrix
     conf_matrix = confusion_matrix(y_test, y_pred)
     flatConfMatrix = conf_matrix.ravel()
 
-    return oob, f1, accuracy, precision, recall, flatConfMatrix
+    return oob, f1, accuracy, precision, recall, conf_matrix
