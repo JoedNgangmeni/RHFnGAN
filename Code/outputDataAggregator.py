@@ -7,15 +7,15 @@ def aggMyData(subdirectory_path, output_path):
 
         if os.path.isdir(entry_path):
             # If it's a directory, ignore it
-            print(f"Processing directory: {entry} ...")
+            print(f"agg is Processing directory: {entry} ...")
             aggMyData(entry_path, output_path)
 
         if entry == '.DS_Store':
-            print("Skipping .DS_Store file")
+            print("agg is Skipping .DS_Store file")
             continue
 
         elif os.path.isfile(entry_path):
-            print(f"Processing file: {entry} ...")
+            print(f"agg is Processing file: {entry} ...")
             numTrees, treeDepth, modelType, taskType, fromDataset = splitSingleDataFileName(entry)
             saveHere = os.path.join(output_path, f'_{fromDataset}_{modelType}_{taskType}_')
             
@@ -37,8 +37,8 @@ def splitSingleDataFileName(entry_name):
 
     # Assign last 4 values of the split, should be numtrees, treedepth, datasetname, modeltype
     attrName = fName[1:-1]
-    numTrees = attrName[0]
-    treeDepth = attrName[1]
+    numTrees = int(attrName[0])
+    treeDepth = int(attrName[1])
     fromDataset = attrName[2]
     modelType = attrName[3]
     taskType = attrName[4]
