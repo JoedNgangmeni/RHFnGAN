@@ -2,36 +2,55 @@ import os
 import pandas as pd, numpy as np
 
 def aggMyData(subdirectory_path, output_path):
+    """
+    The aggMyData function takes a directory of data files and aggregates them into one file.
+    
+    :param subdirectory_path: Specify the path to the directory containing all of your initial data files
+    :param output_path: Specify where the aggregated data will be saved
+    :return: None
+    :doc-author: Trelent
+    """
     for entry in os.listdir(subdirectory_path):
         entry_path = os.path.join(subdirectory_path, entry)
 
         if os.path.isdir(entry_path):
             # If it's a directory, ignore it
-            print(f"agg is Processing directory: {entry} ...")
+            print(f"agg is processing directory: {entry} ...")
             aggMyData(entry_path, output_path)
 
         if entry == '.DS_Store':
-            print("agg is Skipping .DS_Store file")
+            print("agg is skipping .DS_Store file")
             continue
 
         elif os.path.isfile(entry_path):
-            print(f"agg is Processing file: {entry} ...")
+            print(f"\nagg is processing file: {entry} ...")
             numTrees, treeDepth, modelType, taskType, fromDataset = splitSingleDataFileName(entry)
             saveHere = os.path.join(output_path, f'_{fromDataset}_{modelType}_{taskType}_')
             
             if taskType == 'reg': 
                 myAggData = aggRegFile(entry_path)
                 with open(saveHere, 'a') as myOut:
-                    myOut.write(f"{numTrees}\t{treeDepth}\t{myAggData['oob'].loc[0]}\t{myAggData['r2'].loc[0]}\t{myAggData['rmse'].loc[0]}\t{myAggData['mse'].loc[0]}\t{myAggData['mae'].loc[0]}\t{myAggData['buildtime'].loc[0]}\n")
+                    myOut.write(f"{myAggData['numTrees'].loc[0]}\t{myAggData['treeDepth'].loc[0]}\t{myAggData['oob'].loc[0]}\t{myAggData['r2'].loc[0]}\t{myAggData['rmse'].loc[0]}\t{myAggData['mse'].loc[0]}\t{myAggData['mae'].loc[0]}\t{myAggData['buildTime'].loc[0]}\n")
 
             elif taskType =='cls':
                 myAggData = aggClsFile(entry_path)
                 with open(saveHere, 'a') as myOut:
-                    myOut.write(f"{numTrees}\t{treeDepth}\t{myAggData['oob'].loc[0]}\t{myAggData['f1'].loc[0]}\t{myAggData['accuracy'].loc[0]}\t{myAggData['precision'].loc[0]}\t{myAggData['recall'].loc[0]}\t{myAggData['buildtime'].loc[0]}\n")   
+                    myOut.write(f"{myAggData['numTrees'].loc[0]}\t{myAggData['treeDepth'].loc[0]}\t{myAggData['oob'].loc[0]}\t{myAggData['f1'].loc[0]}\t{myAggData['accuracy'].loc[0]}\t{myAggData['precision'].loc[0]}\t{myAggData['recall'].loc[0]}\t{myAggData['buildTime'].loc[0]}\n")   
 
           
 
 def splitSingleDataFileName(entry_name): 
+    """
+    The splitSingleDataFileName function takes in a single file name and splits it into its constituent parts.
+    The function returns the number of trees, tree depth, model type (e.g., RandomForestClassifier), task type (e.g., classification), 
+    and fromDataset (the dataset used to train the model). The function is called by splitDataFileNames.
+    
+    :param entry_name: The name of the file that will be processed
+    :return: numTrees, treeDepth, modelType, taskType, fromDataset
+    :doc-author: Trelent
+    """
+    print('splitting file name...')
+
     # split file name by '_'
     fName = entry_name.split('_')
 
@@ -48,29 +67,61 @@ def splitSingleDataFileName(entry_name):
 
 
 def aggRegFile(entry_path):
+    """
+    The aggRegFile function takes a single file path as an argument and returns a pandas DataFrame with the following columns:
+        - numTrees: mean number of trees in the forests in the file
+        - treeDepth: mean depth of each tree in the forests in the file
+        - oob: mean out-of-bag error rate for these runs (0.0 to 1.0)
+        - r2, rmse, mse, mae : mean regression metrics for these runs (see https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics) 
+    
+    :param entry_path: Specify the path to the file that is being aggregated
+    :return: The aggregated dataframe
+    :doc-author: Trelent
+    """
+    print(f'aggregating {entry_path}...')
+
     data = pd.read_csv(entry_path, sep='\t', header=0)
     aggData = pd.DataFrame()
-
+    
+    aggData['numTrees'] = [data['numTrees'].mean()]
+    aggData['treeDepth'] = [data['treeDepth'].mean()]
     aggData['oob'] = [data['oob'].mean()]
     aggData['r2'] = [data['r2'].mean()]
     aggData['rmse'] = [data['rmse'].mean()]
     aggData['mse'] = [data['mse'].mean()]
     aggData['mae'] = [data['mae'].mean()]
-    aggData['buildtime'] = [data['buildtime'].mean()]
+    aggData['buildTime'] = [data['buildTime'].mean()]
     return aggData
 
 
 
 def aggClsFile(entry_path):
+    """
+    The aggClsFile function takes in a path to a file containing the results of
+    a classification experiment and returns an aggregated dataframe with the mean
+    values for each metric. 
+    
+    The output dataframe will have one row and 
+    seven columns: numTrees, treeDepth, oob, f_one_score (f-measure), accuracy score, 
+    precision score and recall score.
+    
+    :param entry_path: Specify the path of the file to be aggregated
+    :return: The aggregated dataframe with the average values of each column
+    :doc-author: Trelent
+    """
+    print(f'aggregating {entry_path}...')
+
     data = pd.read_csv(entry_path, sep='\t', header=0)
     aggData = pd.DataFrame()
 
+    aggData['numTrees'] = [data['numTrees'].mean()]
+    aggData['treeDepth'] = [data['treeDepth'].mean()]
     aggData['oob'] = [data['oob'].mean()]
     aggData['f1'] = [data['f1'].mean()]
     aggData['accuracy'] = [data['accuracy'].mean()]
     aggData['precision'] = [data['precision'].mean()]
     aggData['recall'] = [data['recall'].mean()]
-    aggData['buildtime'] = [data['buildtime'].mean()]
+    aggData['buildTime'] = [data['buildTime'].mean()]
     return aggData
 
 

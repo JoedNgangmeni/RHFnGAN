@@ -24,6 +24,8 @@ def growRegressor(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, shuffle=True)
 
+    print(f'\nBuilding regression forest with {NUMTREES} trees each {DEPTH} deep\n')
+
     # Initialize the random forest
     rf = RandomForestRegressor(n_estimators=NUMTREES, max_depth=DEPTH, max_features='sqrt', bootstrap=True, oob_score=True)
 
@@ -67,6 +69,8 @@ def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     """
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, shuffle=True)
+
+    print(f'\nBuilding classification forest with {NUMTREES} trees each {DEPTH} deep\n')
 
     # Initialize the random forest
     rf = RandomForestClassifier(n_estimators=NUMTREES, max_depth=DEPTH, max_features='sqrt', bootstrap=True, oob_score=True)
