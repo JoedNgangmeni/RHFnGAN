@@ -1,10 +1,151 @@
-import math, os
+import math, os, time
 import pandas as pd, numpy as np
+import inputDataParser as parse
 from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
+def isEmpty(file_path):
+    return os.stat(file_path).st_size == 0
+
+def regressionRuns(model: str, task: str, allDatasets: list, regDatasets: list, ESTNUM: int, DEPTH: int, MAX_RUNS: int, rawDataPath: str, aggDataPath: str ):
+    """
+    The regressionRuns function is used to run the Random Forest Regressor on a given dataset.
+   
+    :param model: str: Specify the type of model to be used ('RF', 'XGB', etc...)
+    :param task: str: Specify the type of task being performed ('reg')
+    :param allDatasets: list: a list with the abreviated names of all available datasets
+    :param regDatasets: list: Specify which datasets to run the regression on
+    :param ESTNUM: int: Set the number of trees in the forest
+    :param DEPTH: int: Set the depth of each tree in the forest
+    :param MAX_RUNS: int: Set the number of times we want to run the model with that number of trees and depth
+    :param rawDataPath: str: Specify the path to the directory where you want your raw data saved
+    :param aggDataPath: str: Specify the path to where the aggregated data will be stored
+    :return: None
+    :doc-author: Trelent
+    """
+    for dataset in allDatasets:
+        if dataset in regDatasets: 
+
+            X,y = parse.getCaliData()
+
+            # Get the data 
+            if dataset == 'cali':
+                X,y = parse.getCaliData()
+            elif dataset == 'air':
+                X,y = parse.getAirData()
+            elif dataset == 'fb':
+                X,y = parse.getFbData()
+            elif dataset == 'aba':
+                X,y = parse.getAbaData()
+                
+            for numEstimators in ESTNUM:
+                for depth in DEPTH:
+                    runNumber = 1
+
+                    while (runNumber < MAX_RUNS + 1):
+                        print(f'\nRun number:\t{runNumber}')
+
+
+                        # Set file name system for raw data
+                        saveRawDataHere = os.path.join(rawDataPath, dataset, f'_{numEstimators}_{depth}_{dataset}_{model}_{task}_')
+
+                        # add header to raw and agg file
+                        with open(saveRawDataHere, 'a') as raw_file:
+                            if isEmpty(saveRawDataHere):
+                                raw_file.write(f"numTrees\ttreeDepth\toob\tr2\trmse\tmse\tmae\tbuildTime\n") 
+                        
+                        # Set file name system for agg data
+                        saveAggDataHere = os.path.join(aggDataPath, f'_{dataset}_{model}_{task}_')
+                        
+                        # add header to agg data file 
+                        with open(saveAggDataHere, 'a') as agg_file:
+                            if isEmpty(saveAggDataHere):
+                                agg_file.write(f"numTrees\ttreeDepth\toob\tr2\trmse\tmse\tmae\tbuildTime\n")
+
+                        # run and time forest building
+                        start_time = time.time()
+                        oob, r2, rmse, mse, mae = growRegressor(numEstimators, depth, X, y)
+                        finish_time = time.time()
+                        buildtime = finish_time - start_time
+
+                        # write data to file
+                        print(f'saving data in {saveRawDataHere}')
+                        with open(saveRawDataHere, 'a') as raw_file:
+                            raw_file.write(f"{numEstimators}\t{depth}\t{oob}\t{r2}\t{rmse}\t{mse}\t{mae}\t{buildtime}\n")
+
+                        # increment counter    
+                        runNumber += 1
+
+def classificationRuns(model: str, task: str, allDatasets: list, clsDatasets: list, ESTNUM: int, DEPTH: int, MAX_RUNS: int, rawDataPath: str, aggDataPath: str ):
+    """
+    The regressionRuns function is used to run the Random Forest Regressor on a given dataset.
+   
+    :param model: str: Specify the type of model to be used ('RF', 'XGB', etc...)
+    :param task: str: Specify the type of task being performed ('cls')
+    :param allDatasets: list: a list with the abreviated names of all available datasets
+    :param regDatasets: list: Specify which datasets to run the regression on
+    :param ESTNUM: int: Set the number of trees in the forest
+    :param DEPTH: int: Set the depth of each tree in the forest
+    :param MAX_RUNS: int: Set the number of times we want to run the model with that number of trees and depth
+    :param rawDataPath: str: Specify the path to the directory where you want your raw data saved
+    :param aggDataPath: str: Specify the path to where the aggregated data will be stored
+    :return: None
+    :doc-author: Trelent
+    """
+    for dataset in allDatasets:
+        if dataset in clsDatasets: 
+
+            X,y = parse.getIncomeData()
+
+            # Get the data 
+            if dataset == 'income':
+                X,y = parse.getIncomeData()
+            elif dataset == 'diabetes':
+                X,y = parse.getDiabetesData()
+            elif dataset == 'cancer':
+                X,y = parse.getCancerData()
+            elif dataset == 'wine':
+                X,y = parse.getWineData()
+            elif dataset == 'HAR':
+                X,y = parse.getHARData()
+                
+            for numEstimators in ESTNUM:
+                for depth in DEPTH:
+                    runNumber = 1
+                    while (runNumber < MAX_RUNS + 1):
+                        print(f'\nRun number:\t{runNumber}')
+
+                        # Set file name system for raw data
+                        saveRawDataHere = os.path.join(rawDataPath, dataset, f'_{numEstimators}_{depth}_{dataset}_{model}_{task}_')
+
+                        # add header to raw and agg file
+                        with open(saveRawDataHere, 'a') as raw_file:
+                            if isEmpty(saveRawDataHere):
+                                raw_file.write(f"numTrees\ttreeDepth\toob\tf1\taccuracy\tprecision\trecall\tbuildTime\n") 
+                        
+                        # Set file name system for agg data
+                        saveAggDataHere = os.path.join(aggDataPath, f'_{dataset}_{model}_{task}_')
+                        
+                        # add header to agg data file 
+                        with open(saveAggDataHere, 'a') as agg_file:
+                            if isEmpty(saveAggDataHere):
+                                agg_file.write(f"numTrees\ttreeDepth\toob\tf1\taccuracy\tprecision\trecall\tbuildTime\n")
+
+                        # run and time forest building
+                        start_time = time.time()
+                        oob, f1, accuracy, precision, recall, conf_matrix = growClassifier(numEstimators, depth, X, y)
+                        finish_time = time.time()
+                        buildtime = finish_time - start_time
+
+                        # write data to file
+                        print(f'saving data in {saveRawDataHere}')
+                        with open(saveRawDataHere, 'a') as raw_file:
+                            raw_file.write(f"{numEstimators}\t{depth}\t{oob}\t{f1}\t{accuracy}\t{precision}\t{recall}\t{buildtime}\n")
+
+                        # increment counter    
+                        runNumber += 1
 
 def growRegressor(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     """
