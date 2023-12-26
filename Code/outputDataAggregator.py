@@ -125,3 +125,18 @@ def aggClsFile(entry_path):
     return aggData
 
 
+
+def sortAggData(entry_path): 
+    """
+    The sortAggData function takes in a path to an aggregated data file and returns the sorted data.
+    The function sorts the data by numTrees and treeDepth, ascending.
+    
+    :param entry_path: Specify the path of the file to be sorted
+    :return: A sorted dataframe
+    :doc-author: Trelent
+    """
+    print(f"Sorting {entry_path}...")    
+    data = pd.read_csv(entry_path, sep='\t', header=0)
+
+    sortedData = data.sort_values(by=['numTrees', 'treeDepth'], ascending=[True, True], ignore_index=True)
+    return sortedData

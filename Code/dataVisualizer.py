@@ -1,5 +1,6 @@
-import math, os
-import pandas as pd, numpy as np, matplotlib.pyplot as plt
+import os
+import pandas as pd, matplotlib.pyplot as plt
+import outputDataAggregator as agg
 
 extDataNames =['California Housing', 'Italy Air Quality', 'Facebook Comment Volume', 'Abalone', 'Pima Native American Diabetes' , 'Wisconsin Breast Cancer Diagnostic', 'Portugal Wine Quality' , 'Human Activity Recognition', 'Adult Income']
 extFolderNames = ['cali', 'air', 'fb' , 'aba', 'diabetes', 'cancer', 'wine', 'HAR', 'income']
@@ -40,15 +41,14 @@ def graphsNTables(subdirectory_path, graphs_path, tables_path):
             elif taskType == 'cls': # classification task 
                 myHeader = ['numTrees', 'treeDepth', 'oob', 'f1', 'accuracy', 'precision', 'recall', 'buildTime']
             
-            myAggData = sortAggData(entry_path)
+            myAggData = agg.sortAggData(entry_path)
             topHowMany = 10
             for errorMetric in myHeader[2:]:
-                myTableFrame = makeTableFrame(topHowMany, myAggData, errorMetric)
-                storeTable(myTableFrame, fromDataset, errorMetric, modelType, taskType, tables_path)
+                bestTableFrame = makeTableFrame(topHowMany, myAggData, errorMetric)
+                storeTable(bestTableFrame, fromDataset, errorMetric, modelType, taskType, tables_path)
+
                 myGraph = makeGraph(myAggData, fromDataset , errorMetric)
                 storeGraph(myGraph, fromDataset, errorMetric, modelType, taskType, graphs_path)
-
-
 
 
 
@@ -75,23 +75,6 @@ def splitAggDataFileName(entry_name):
     taskType = attrName[2]
     # # print('my Fname\t',attrName,'\n')
     return fromDataset, modelType, taskType
-
-
-
-def sortAggData(entry_path): 
-    """
-    The sortAggData function takes in a path to an aggregated data file and returns the sorted data.
-    The function sorts the data by numTrees and treeDepth, ascending.
-    
-    :param entry_path: Specify the path of the file to be sorted
-    :return: A sorted dataframe
-    :doc-author: Trelent
-    """
-    print(f"Sorting {entry_path}...")    
-    data = pd.read_csv(entry_path, sep='\t', header=0)
-
-    sortedData = data.sort_values(by=['numTrees', 'treeDepth'], ascending=[True, True], ignore_index=True)
-    return sortedData
 
 
 
@@ -241,12 +224,11 @@ def makeTableFrame(topHowMany: int, myAggData: pd.DataFrame, errorMetric):
             topErrs = pd.concat([topErrs, max_point_df], axis=0, ignore_index=True)
 
             # topErrs = pd.concat([topErrs, max_point], axis=0, ignore_index=True)
-            myAggData = myAggData.drop(myAggData[myAggData[errorMetric] == max_point[errorMetric]].index)
-    
+            myAggData = myAggData.drop(myAggData[myAggData[errorMetric] == max_point[errorMetric]].index)    
     return topErrs
 
 
-        
+
 def storeTable(myTableFrame: pd.DataFrame, fromDataset, errorMetric, modelType, taskType, tables_path):
     """
     The storeTable function takes in a DataFrame, the dataset name, error metric type (e.g. MSE, MAE, etc...), model type (regression or classification), 
