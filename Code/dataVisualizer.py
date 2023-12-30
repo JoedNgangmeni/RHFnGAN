@@ -1,12 +1,8 @@
 import os
 import pandas as pd, matplotlib.pyplot as plt
 import outputDataAggregator as agg
+import myStructure as my
 
-extDataNames =['California Housing', 'Italy Air Quality', 'Facebook Comment Volume', 'Abalone', 'Pima Native American Diabetes' , 'Wisconsin Breast Cancer Diagnostic', 'Portugal Wine Quality' , 'Human Activity Recognition', 'Adult Income']
-extFolderNames = ['cali', 'air', 'fb' , 'aba', 'diabetes', 'cancer', 'wine', 'HAR', 'income']
-
-risingMetric = ['r2', 'accuracy', 'precision', 'recall', 'f1','buildTime']
-fallingMetric = ['rmse', 'mse', 'mae', 'oob']
 
 def graphsNTables(subdirectory_path, graphs_path, tables_path):
     """
@@ -42,7 +38,7 @@ def graphsNTables(subdirectory_path, graphs_path, tables_path):
                 myHeader = ['numTrees', 'treeDepth', 'oob', 'f1', 'accuracy', 'precision', 'recall', 'buildTime']
             
             myAggData = agg.sortAggData(entry_path)
-            topHowMany = 10
+            topHowMany = 10 
             for errorMetric in myHeader[2:]:
                 bestTableFrame = makeTableFrame(topHowMany, myAggData, errorMetric)
                 storeTable(bestTableFrame, fromDataset, errorMetric, modelType, taskType, tables_path)
@@ -91,26 +87,10 @@ def makeGraph(myData: pd.DataFrame, fromDataset, errorMetric):
     :return: A plot object (the graph) that we want to save 
     :doc-author: Trelent
     """
-    print(f"Graphing {errorMetric} data...")   
-    if fromDataset == 'cali':
-        myTitle = extDataNames[0]
-    elif fromDataset == 'air':
-        myTitle = extDataNames[1]
-    elif fromDataset == 'fb':
-        myTitle = extDataNames[2]
-    elif fromDataset == 'aba':
-        myTitle = extDataNames[3]
-    elif fromDataset == 'diabetes':
-        myTitle = extDataNames[4]
-    elif fromDataset == 'cancer':
-        myTitle = extDataNames[5]
-    elif fromDataset == 'wine':
-        myTitle = extDataNames[6]
-    elif fromDataset == 'HAR':
-        myTitle = extDataNames[7]
-    elif fromDataset == 'income':
-        myTitle = extDataNames[8] 
+    print(f"Graphing {errorMetric} data...")  
 
+    myTitle = my.setTitle(fromDataset, my.extDataNames) 
+    
     X, Y = myData['numTrees'], myData['treeDepth']
    
     if errorMetric == 'buildTime':
@@ -126,7 +106,6 @@ def makeGraph(myData: pd.DataFrame, fromDataset, errorMetric):
         ax[1].set_title(f'{Y.name} vs. {errorMetric}')
         ax[1].set_xlabel(f'{errorMetric}')
         ax[1].set_ylabel(f'{Y.name}')
-
 
 
     elif errorMetric != 'buildTime': 
@@ -190,7 +169,7 @@ def makeTableFrame(topHowMany: int, myAggData: pd.DataFrame, errorMetric):
 
     topErrs = pd.DataFrame(columns=myAggData.columns)   
 
-    if errorMetric in risingMetric:
+    if errorMetric in my.risingMetric:
         for num in range(topHowMany):
             max_point = myAggData.loc[myAggData[errorMetric].idxmax()]
 
@@ -208,7 +187,7 @@ def makeTableFrame(topHowMany: int, myAggData: pd.DataFrame, errorMetric):
             # topErrs = pd.concat([topErrs, max_point], axis=0, ignore_index=True)
             myAggData = myAggData.drop(myAggData[myAggData[errorMetric] == max_point[errorMetric]].index)
     
-    elif errorMetric in fallingMetric:
+    elif errorMetric in my.fallingMetric:
         for num in range(topHowMany):
             max_point = myAggData.loc[myAggData[errorMetric].idxmin()]
 
@@ -252,24 +231,8 @@ def storeTable(myTableFrame: pd.DataFrame, fromDataset, errorMetric, modelType, 
 
     ax.table(cellText=myTableFrame.values, colLabels=myTableFrame.columns, cellLoc='center', loc='center')
 
-    if fromDataset == 'cali':
-        myTitle = extDataNames[0]
-    elif fromDataset == 'air':
-        myTitle = extDataNames[1]
-    elif fromDataset == 'fb':
-        myTitle = extDataNames[2]
-    elif fromDataset == 'aba':
-        myTitle = extDataNames[3]
-    elif fromDataset == 'diabetes':
-        myTitle = extDataNames[4]
-    elif fromDataset == 'cancer':
-        myTitle = extDataNames[5]
-    elif fromDataset == 'wine':
-        myTitle = extDataNames[6]
-    elif fromDataset == 'HAR':
-        myTitle = extDataNames[7]
-    elif fromDataset == 'income':
-        myTitle = extDataNames[8]
+    myTitle = my.setTitle(fromDataset, my.extDataNames) 
+
     ax.set_title(f'Best {errorMetric.upper()} Scores, {myTitle} Dataset', y=.8)
 
     tPath = os.path.join(tables_path, fromDataset)

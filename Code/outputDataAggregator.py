@@ -1,5 +1,6 @@
 import os
-import pandas as pd, numpy as np
+import pandas as pd
+
 
 def aggMyData(subdirectory_path, output_path):
     """
