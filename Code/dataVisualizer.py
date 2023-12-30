@@ -4,7 +4,7 @@ import outputDataAggregator as agg
 import myStructure as my
 
 
-def graphsNTables(subdirectory_path, graphs_path, tables_path):
+def graphsNTables(subdirectory_path:str, graphs_path:str, tables_path:str, topNUM:int):
     """
     The graphsNTables function takes in a subdirectory path, the 'graphs' directory path, and 'tables' directory path.
     It then iterates through the files in the subdirectory and creates a table and graph for each error metric. 
@@ -38,9 +38,8 @@ def graphsNTables(subdirectory_path, graphs_path, tables_path):
                 myHeader = ['numTrees', 'treeDepth', 'oob', 'f1', 'accuracy', 'precision', 'recall', 'buildTime']
             
             myAggData = agg.sortAggData(entry_path)
-            topHowMany = 10 
             for errorMetric in myHeader[2:]:
-                bestTableFrame = makeTableFrame(topHowMany, myAggData, errorMetric)
+                bestTableFrame = makeTableFrame(myAggData, errorMetric, topNUM)
                 storeTable(bestTableFrame, fromDataset, errorMetric, modelType, taskType, tables_path)
 
                 myGraph = makeGraph(myAggData, fromDataset , errorMetric)
@@ -152,25 +151,23 @@ def storeGraph(myFig: plt.Figure, fromDataset, errorMetric, modelType, taskType,
 
 
 
-def makeTableFrame(topHowMany: int, myAggData: pd.DataFrame, errorMetric):
+def makeTableFrame(myAggData: pd.DataFrame, errorMetric, topNUM:int):
     """
     The makeTableFrame function takes in the following parameters:
-        topHowMany - The number of rows to return from the dataframe.
         myAggData - The dataframe that contains all of the aggregated error metrics.
         errorMetric - A string the name of the an error metric (e.g. mse, mae, rmse, r2).
     
-    :param topHowMany: int: Specify how many rows of data to return
     :param myAggData: pd.DataFrame: Pass in the aggregated data frame from which you will select rows
     :param errorMetric: Determine which error metric to use for the analysis
-    :return: A dataframe with the topHowMany rows of myAggData
+    :return: A dataframe with the topNUM rows of myAggData
     :doc-author: Trelent
     """
-    print(f"Putting the top {topHowMany} {errorMetric.upper()} into a frame...")
+    print(f"Putting the top {topNUM} {errorMetric.upper()} into a frame...")
 
     topErrs = pd.DataFrame(columns=myAggData.columns)   
 
     if errorMetric in my.risingMetric:
-        for num in range(topHowMany):
+        for num in range(topNUM):
             max_point = myAggData.loc[myAggData[errorMetric].idxmax()]
 
             # Convert the values to numeric
@@ -188,7 +185,7 @@ def makeTableFrame(topHowMany: int, myAggData: pd.DataFrame, errorMetric):
             myAggData = myAggData.drop(myAggData[myAggData[errorMetric] == max_point[errorMetric]].index)
     
     elif errorMetric in my.fallingMetric:
-        for num in range(topHowMany):
+        for num in range(topNUM):
             max_point = myAggData.loc[myAggData[errorMetric].idxmin()]
 
             # Convert the values to numeric
