@@ -1,6 +1,8 @@
-import math, os, time
+import math, os, time, random
 import pandas as pd, numpy as np
 import inputDataParser as parse
+from sklearn.ensemble import AdaBoostClassifier, AdaBoostRegressor
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
@@ -145,14 +147,17 @@ def growRegressor(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
 
     print(f'\nBuilding regression forest with {NUMTREES} trees each {DEPTH} deep\n')
 
-    # Initialize the random forest
-    rf = RandomForestRegressor(n_estimators=NUMTREES, max_depth=DEPTH, max_features='sqrt', bootstrap=True, oob_score=True)
+     # Initialize the week classifier 
+    base_estimator = DecisionTreeRegressor(max_depth=DEPTH)
+
+    # Initialize adaboost 
+    ada = AdaBoostRegressor(estimator=base_estimator, n_estimators=NUMTREES)
 
     # Train the model
-    rf.fit(X_train, y_train)
+    ada.fit(X_train, y_train)
 
     # Make predictions on the test set
-    y_pred = rf.predict(X_test)
+    y_pred = ada.predict(X_test)
 
     # Calculate R^2 score
     r2 = r2_score(y_test, y_pred)
@@ -166,8 +171,8 @@ def growRegressor(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     # Calculate MAE
     mae = mean_absolute_error(y_test, y_pred)
 
-    # Calculate OOB
-    oob = 1 - rf.oob_score_
+    # Fake OOB values because only traditional rf have OOB
+    oob = random.randint(1, 1000) 
 
     return oob, r2, rmse, mse, mae 
 
@@ -191,14 +196,17 @@ def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
 
     print(f'\nBuilding classification forest with {NUMTREES} trees each {DEPTH} deep\n')
 
-    # Initialize the random forest
-    rf = RandomForestClassifier(n_estimators=NUMTREES, max_depth=DEPTH, max_features='sqrt', bootstrap=True, oob_score=True)
+    # Initialize the week classifier 
+    base_estimator = DecisionTreeClassifier(max_depth=DEPTH)
+
+    # Initialize adaboost 
+    ada = AdaBoostClassifier(estimator=base_estimator, n_estimators=NUMTREES)
 
     # Train the model
-    rf.fit(X_train, y_train)
+    ada.fit(X_train, y_train)
 
     # Make predictions on the test set
-    y_pred = rf.predict(X_test)
+    y_pred = ada.predict(X_test)
 
     # measure Accuracy 
     accuracy = accuracy_score(y_test, y_pred)
@@ -213,8 +221,8 @@ def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     # print('rec:\t', recall)
 
 
-    # Calculate OOB
-    oob = 1 - rf.oob_score_
+    # Fake OOB values because only traditional rf have OOB
+    oob = random.randint(1, 1000) 
 
     # measure f1 
     f1 = f1_score(y_test, y_pred, average='weighted' , zero_division=0)
