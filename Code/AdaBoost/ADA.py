@@ -5,6 +5,7 @@ import outputDataAggregator as agg
 import dataVisualizer as vis
 import myStructure as my
 import adabooster as myBoost
+import inputDataParser as parse
 
 
 base_dir = os.path.dirname(os.path.abspath(__file__))  # Gets the directory where your script is
@@ -33,3 +34,4 @@ learn_step = int(input("Set learning rate step size: "))
 LEARNING_RATE = list(range(start_learn, final_learn + 1, learn_step))
 
 topNUM = my.topHowMany()
+

@@ -4,11 +4,11 @@ myDir = os.path.dirname(os.path.abspath(__file__))  # Gets the directory where y
 resultDirs = ['RawData', 'AggData', 'Graphs', 'Tables']
 
 regDatasets = ['cali', 'air', 'fb' , 'aba']
-clsDatasets = ['income', 'diabetes', 'cancer', 'wine', 'HAR']
+clsDatasets = ['income', 'diabetes', 'cancer', 'wine', 'HAR', 'heart']
 allDatasets = regDatasets + clsDatasets
 
-extDataNames =['California Housing', 'Italy Air Quality', 'Facebook Comment Volume', 'Abalone', 'Pima Native American Diabetes' , 'Wisconsin Breast Cancer Diagnostic', 'Portugal Wine Quality' , 'Human Activity Recognition', 'Adult Income']
-extFolderNames = ['cali', 'air', 'fb' , 'aba', 'diabetes', 'cancer', 'wine', 'HAR', 'income']
+extDataNames =['California Housing', 'Italy Air Quality', 'Facebook Comment Volume', 'Abalone', 'Pima Native American Diabetes' , 'Wisconsin Breast Cancer Diagnostic', 'Portugal Wine Quality' , 'Human Activity Recognition', 'Adult Income', 'C.H.S.LB Heart Disease']
+extFolderNames = ['cali', 'air', 'fb' , 'aba', 'diabetes', 'cancer', 'wine', 'HAR', 'income', 'heart']
 
 risingMetric = ['r2', 'accuracy', 'precision', 'recall', 'f1','buildTime']
 fallingMetric = ['rmse', 'mse', 'mae', 'oob']
@@ -90,5 +90,7 @@ def setTitle(fromDataset: str, extDataNames:list):
         myTitle = extDataNames[7]
     elif fromDataset == 'income':
         myTitle = extDataNames[8] 
+    elif fromDataset == 'heart':
+        myTitle = extDataNames[9] 
 
     return myTitle

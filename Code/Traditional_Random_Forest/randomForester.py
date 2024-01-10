@@ -28,18 +28,8 @@ def regressionRuns(model: str, task: str, allDatasets: list, regDatasets: list, 
     for dataset in allDatasets:
         if dataset in regDatasets: 
 
-            X,y = parse.getCaliData()
+            X,y = parse.getRegData(dataset)
 
-            # Get the data 
-            if dataset == 'cali':
-                X,y = parse.getCaliData()
-            elif dataset == 'air':
-                X,y = parse.getAirData()
-            elif dataset == 'fb':
-                X,y = parse.getFbData()
-            elif dataset == 'aba':
-                X,y = parse.getAbaData()
-                
             for numEstimators in ESTNUM:
                 for depth in DEPTH:
                     runNumber = 1
@@ -97,20 +87,8 @@ def classificationRuns(model: str, task: str, allDatasets: list, clsDatasets: li
     for dataset in allDatasets:
         if dataset in clsDatasets: 
 
-            X,y = parse.getIncomeData()
+            X,y = parse.getClsData(dataset)
 
-            # Get the data 
-            if dataset == 'income':
-                X,y = parse.getIncomeData()
-            elif dataset == 'diabetes':
-                X,y = parse.getDiabetesData()
-            elif dataset == 'cancer':
-                X,y = parse.getCancerData()
-            elif dataset == 'wine':
-                X,y = parse.getWineData()
-            elif dataset == 'HAR':
-                X,y = parse.getHARData()
-                
             for numEstimators in ESTNUM:
                 for depth in DEPTH:
                     runNumber = 1

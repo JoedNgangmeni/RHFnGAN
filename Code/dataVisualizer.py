@@ -42,8 +42,11 @@ def graphsNTables(subdirectory_path:str, graphs_path:str, tables_path:str, topNU
                 bestTableFrame = makeTableFrame(myAggData, errorMetric, topNUM)
                 storeTable(bestTableFrame, fromDataset, errorMetric, modelType, taskType, tables_path)
 
-                myGraph = makeGraph(myAggData, fromDataset , errorMetric)
-                storeGraph(myGraph, fromDataset, errorMetric, modelType, taskType, graphs_path)
+                my3DGraph = make3DGraph(myAggData, fromDataset , errorMetric)
+                storeGraph(my3DGraph, fromDataset, errorMetric, modelType, taskType, '3D', graphs_path)
+                
+                my2DGraph = make2DGraph(myAggData, fromDataset , errorMetric)
+                storeGraph(my2DGraph, fromDataset, errorMetric, modelType, taskType,'2D', graphs_path)
 
 
 
@@ -73,7 +76,7 @@ def splitAggDataFileName(entry_name):
 
 
 
-def makeGraph(myData: pd.DataFrame, fromDataset, errorMetric):
+def make3DGraph(myData: pd.DataFrame, fromDataset, errorMetric):
     """
     The makeGraph function takes in a dataframe, the name of the dataset it came from, and an error metric.
     It then plots a 3D surface graph with trees on the x-axis, depth on the y-axis, and error metric values on z-axis. 
@@ -86,47 +89,53 @@ def makeGraph(myData: pd.DataFrame, fromDataset, errorMetric):
     :return: A plot object (the graph) that we want to save 
     :doc-author: Trelent
     """
-    print(f"Graphing {errorMetric} data...")  
+    print(f"Making a 3D Graphing of {errorMetric} data...")  
 
     myTitle = my.setTitle(fromDataset, my.extDataNames) 
     
     X, Y = myData['numTrees'], myData['treeDepth']
    
-    if errorMetric == 'buildTime':
-        fig, ax = plt.subplots(1, 2, figsize=(10, 4))
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
 
-        ax[0].scatter(myData[errorMetric],X, color='blue')
-        ax[0].set_title(f'{X.name} vs. {errorMetric}')
-        ax[0].set_xlabel(f'{errorMetric}')
-        ax[0].set_ylabel(f'{X.name}')
+    # Plot the 3D surface
+    ax.plot_trisurf(X, Y, myData[errorMetric], cmap='inferno', edgecolor='k', linewidth=0.03)
 
-
-        ax[1].scatter(myData[errorMetric],Y, color='red')
-        ax[1].set_title(f'{Y.name} vs. {errorMetric}')
-        ax[1].set_xlabel(f'{errorMetric}')
-        ax[1].set_ylabel(f'{Y.name}')
-
-
-    elif errorMetric != 'buildTime': 
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-
-        # Plot the 3D surface
-        ax.plot_trisurf(X, Y, myData[errorMetric], cmap='inferno', edgecolor='k', linewidth=0.03)
-
-        # Set labels
-        ax.set_xlabel('Trees')
-        ax.set_ylabel('Depth')
-        ax.set_zlabel(errorMetric.upper())
-        ax.view_init(elev=27, azim=-142)
-        ax.set_title(f'Aggregate {errorMetric.upper()} Scores\n{myTitle} Dataset')
+    # Set labels
+    ax.set_xlabel('Trees')
+    ax.set_ylabel('Depth')
+    ax.set_zlabel(errorMetric.upper())
+    ax.view_init(elev=27, azim=-142)
+    ax.set_title(f'Aggregate {errorMetric.upper()} Scores\n{myTitle} Dataset')
 
     # plt.show()
     return plt
 
+def make2DGraph(myData: pd.DataFrame, fromDataset, errorMetric):
+    print(f"Making a 2d Graphing of {errorMetric} data...")  
+
+    myTitle = my.setTitle(fromDataset, my.extDataNames) 
+    
+    X, Y = myData['numTrees'], myData['treeDepth']
+   
+    fig, ax = plt.subplots(1, 2, figsize=(10, 4), tight_layout=True)
+
+    ax[0].scatter(X, myData[errorMetric], color='blue')
+    ax[0].set_title(f'{errorMetric} vs. {X.name}')
+    ax[0].set_xlabel(f'{X.name}')
+    ax[0].set_ylabel(f'{errorMetric}')
 
 
-def storeGraph(myFig: plt.Figure, fromDataset, errorMetric, modelType, taskType, graphs_path):
+    ax[1].scatter(Y, myData[errorMetric], color='red')
+    ax[1].set_title(f'{errorMetric} vs. {Y.name}')
+    ax[1].set_xlabel(f'{Y.name}')
+    ax[1].set_ylabel(f'{errorMetric}')
+
+    return plt
+
+
+
+def storeGraph(myFig: plt.Figure, fromDataset, errorMetric, modelType, taskType, graphtype:str, graphs_path):
     """
     The storeGraph function takes in a figure object, the dataset it was generated from,
     the error metric used to generate it (e.g. RMSE), the model type (e.g. RF), the task type
@@ -147,7 +156,7 @@ def storeGraph(myFig: plt.Figure, fromDataset, errorMetric, modelType, taskType,
     gPath = os.path.join(graphs_path, fromDataset)
 
     # myFig.tight_layout()
-    myFig.savefig(os.path.join(gPath, f'_{fromDataset}_{errorMetric}_{modelType}_{taskType}_'), dpi=600)
+    myFig.savefig(os.path.join(gPath, f'_{graphtype}_{fromDataset}_{errorMetric}_{modelType}_{taskType}_'), dpi=600)
 
 
 

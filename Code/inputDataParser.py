@@ -184,6 +184,36 @@ def getWineData():
     y = y.values.ravel()
     return X, y
 
+def getHeartDisease():
+    """
+    The getHeartDisease function returns the heart disease dataset from UCI's machine learning repository.
+    X contains the features (independent variables) and y contains the targets (dependent variable). 
+    
+    
+    :return: a tuple of two pandas dataframes, X and y
+    :doc-author: Trelent
+    """
+    # https://archive.ics.uci.edu/dataset/45/heart+disease
+    # fetch dataset 
+    heart_disease = fetch_ucirepo(id=45) 
+    
+    # data (as pandas dataframes) 
+    tempX = heart_disease.data.features 
+    tempy = heart_disease.data.targets 
+    tempy = tempy.values.ravel()
+
+    # put them both together
+    tempX['target'] = tempy
+
+    # remove any rows with NaN or missing values
+    tempX = tempX.dropna()
+
+    X = tempX.iloc[:,:-1]
+    y = tempX['target']
+
+    return X, y
+
+
 def getHARData():
     """
     The getHARData function returns the Human Activity Recognition dataset.
@@ -221,3 +251,30 @@ def getAllData():
     o, p = getWineData()
     q, r = getHARData()
     return a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r
+
+
+def getRegData(dataset: str): 
+    if dataset == 'cali':
+        X,y = getCaliData()
+    elif dataset == 'air':
+        X,y = getAirData()
+    elif dataset == 'fb':
+        X,y = getFbData()
+    elif dataset == 'aba':
+        X,y = getAbaData()
+    return X, y
+
+def getClsData(dataset: str): 
+    if dataset == 'income':
+        X,y = getIncomeData()
+    elif dataset == 'diabetes':
+        X,y = getDiabetesData()
+    elif dataset == 'cancer':
+        X,y = getCancerData()
+    elif dataset == 'wine':
+        X,y = getWineData()
+    elif dataset == 'HAR':
+        X,y = getHARData()
+    elif dataset == 'heart':
+        X,y = getHeartDisease()
+    return X, y
