@@ -93,9 +93,8 @@ def setTitle(fromDataset: str, extDataNames:list):
     return myTitle
 
 
-def testRun():
+def testRun(focusDataDir:str):
     focusParentDir = 'TEST'
-    focusDataDir = input("What kind of algorithm are you running ('TRF', 'ADA', etc...): ")
     MAX_RUNS = 2
 
     start_est = 1
@@ -112,9 +111,8 @@ def testRun():
 
     return focusParentDir, focusDataDir, MAX_RUNS, ESTNUM, DEPTH, bestRuns
 
-def prodRun():
+def prodRun(focusDataDir:str):
     focusParentDir = 'RESULTS'
-    focusDataDir = input("What kind of algorithm are you running ('TRF', 'ADA', etc...): ")
     
     # # Define the runs parameters
     MAX_RUNS = int(input("Set the number of runs per permutation: "))
@@ -133,17 +131,17 @@ def prodRun():
 
     return focusParentDir, focusDataDir, MAX_RUNS, ESTNUM, DEPTH, bestRuns
 
-def paramDecider():
+def paramDecider(focusDataDir:str):
     while True:
         user_input = input("Is this a test run? Please enter 'yes' or 'no': ").lower()  # Convert input to lowercase for case-insensitivity
 
         if user_input == 'yes':
             print("You entered 'yes'. Beginning test run sequence...\n")
-            focusParentDir, focusDataDir, MAX_RUNS, ESTNUM, DEPTH, topNUM = testRun()
+            focusParentDir, focusDataDir, MAX_RUNS, ESTNUM, DEPTH, topNUM = testRun(focusDataDir)
             break  # Exit the loop if the input is valid
         elif user_input == 'no':
             print("You entered 'no'. Beginning prod run sequence...\n")
-            focusParentDir, focusDataDir, MAX_RUNS, ESTNUM, DEPTH, topNUM = prodRun()
+            focusParentDir, focusDataDir, MAX_RUNS, ESTNUM, DEPTH, topNUM = prodRun(focusDataDir)
             break  # Exit the loop if the input is valid
         else:
             print("Invalid input. Please enter either 'yes' or 'no'.")
