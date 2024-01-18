@@ -5,6 +5,14 @@ import randomForester as myForest
 import outputDataAggregator as agg
 import dataVisualizer as vis
 import myStructure as my
+import torch
+
+# Check if GPU is available
+print("CUDA Available: ", torch.cuda.is_available())
+
+# Run on GPU
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# Your code here
 
 
 base_dir = os.path.dirname(os.path.abspath(__file__))  # Gets the directory where your script is
