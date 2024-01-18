@@ -7,6 +7,7 @@ import dataVisualizer as vis
 import myStructure as my
 import torch
 
+
 # Check if GPU is available
 print("CUDA Available: ", torch.cuda.is_available())
 
@@ -17,7 +18,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 base_dir = os.path.dirname(os.path.abspath(__file__))  # Gets the directory where your script is
 
-focusParentDir, focusDataDir, MAX_RUNS, ESTNUM, DEPTH, topNUM = my.paramDecider('TRF')
+focusParentDir, focusDataDir, MAX_RUNS, ESTNUM, DEPTH, topNUM = my.paramDecider('RHF')
 
 
 rawDataPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDir}', 'RawData', f'{focusDataDir}'))
@@ -45,3 +46,11 @@ print('\ndata aggregation complete...\n')
 print('\nstarting data tabling and graphing...\n')
 vis.graphsNTables(aggDataPath, graphsPath, tablesPath, topNUM)
 print('\ndata tabling and graphing complete...\n')
+
+
+# import inputDataParser as ID
+
+# X,y = ID.getHeartDisease()
+
+# print(X.shape)
+# print(y.shape)

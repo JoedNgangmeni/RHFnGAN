@@ -35,7 +35,7 @@ def regressionRuns(model: str, task: str, allDatasets: list, regDatasets: list, 
                     runNumber = 1
 
                     while (runNumber < MAX_RUNS + 1):
-                        print(f'\nRun number:\t{runNumber}')
+                        print(f'\n{dataset} Run number:\t{runNumber}')
 
 
                         # Set file name system for raw data
@@ -93,7 +93,7 @@ def classificationRuns(model: str, task: str, allDatasets: list, clsDatasets: li
                 for depth in DEPTH:
                     runNumber = 1
                     while (runNumber < MAX_RUNS + 1):
-                        print(f'\nRun number:\t{runNumber}')
+                        print(f'\n{dataset} Run number:\t{runNumber}')
 
                         # Set file name system for raw data
                         saveRawDataHere = os.path.join(rawDataPath, dataset, f'_{numEstimators}_{depth}_{dataset}_{model}_{task}_')

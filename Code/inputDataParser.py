@@ -1,6 +1,6 @@
 import pandas as pd, numpy as np
 import math, sklearn, os, random, sklearn.datasets
-from ucimlrepo import fetch_ucirepo
+
 
 base_dir = os.path.dirname(os.path.abspath(__file__))  # Gets the directory where your script is
 
@@ -27,14 +27,19 @@ def getAirData():
      @return y : 1D NumPy array shape = (n_samples,)
     """
     # https://archive.ics.uci.edu/dataset/360/air+quality
-    data = fetch_ucirepo(id=360) 
-    temp = data.data.features.drop('PT08.S3(NOx)', axis =1)
-    temp = temp.drop('Time', axis =1)
-    temp = temp.drop('Date', axis =1)
-    temp = temp.drop('NO2(GT)', axis =1)
-    temp = temp.drop('PT08.S4(NO2)', axis =1)
-    y = data.data.features['NOx(GT)'] 
-    X = temp.drop('NOx(GT)', axis =1)
+    pathToFile = os.path.join(base_dir, '../Datasets/extra_datasets_and_zips/air_quality/AirQualityUCI.csv')
+    data = pd.read_csv(pathToFile, sep=';', header=0)
+
+    columns_to_fix = ['CO(GT)', 'C6H6(GT)', 'T', 'RH', 'AH']
+
+    for col in columns_to_fix:
+        data[col] = data[col].str.replace(',', '.').astype(float)
+
+    colsToDrop = ['Date', 'Time', 'NO2(GT)', 'PT08.S4(NO2)', 'PT08.S3(NOx)' , 'Unnamed: 15', 'Unnamed: 16']
+    data = data.drop(columns=colsToDrop, axis=1)
+    data = data.dropna()
+    y = data['NOx(GT)'] 
+    X = data.drop('NOx(GT)', axis=1)
     return X, y
 
 def getFbData():
@@ -75,22 +80,24 @@ def getAbaData():
     """
 
     # https://archive.ics.uci.edu/dataset/1/abalone
-    data = fetch_ucirepo(id=1) 
-    data['data']['features'].loc[:, 'Sex'] = data['data']['features']['Sex'].astype('category')
+    abaHeader = ['Sex', 'Length', 'Diameter', 'Height', 'WholeWeight', 'ShuckedWeight', 'VisceraWeight', 'ShellWeight', 'Rings']
+    pathToFile = os.path.join(base_dir, '../Datasets/extra_datasets_and_zips/uci-abalone/abalone.data.csv')
+    data = pd.read_csv(pathToFile, sep=',', header=None, names=abaHeader) 
+    data.loc[:, 'Sex'] = data['Sex'].astype('category')
 
     # Create one-hot encoding
-    one_hot_encoded = pd.get_dummies(data['data']['features']['Sex'], prefix='Sex')
+    one_hot_encoded = pd.get_dummies(data['Sex'], prefix='Sex')
 
     # Concatenate the one-hot encoded columns with the original DataFrame
-    data['data']['features'] = pd.concat([data['data']['features'], one_hot_encoded], axis=1)
+    data = pd.concat([data, one_hot_encoded], axis=1)
 
     # Drop the original 'Sex' column
-    data['data']['features'] = data['data']['features'].drop('Sex', axis=1)
+    data = data.drop('Sex', axis=1)
 
     # # data (as pandas dataframes) 
-    X = data.data.features 
-    y = data.data.targets 
-    y = y.values.ravel()
+    X = data.drop('Rings', axis=1)  # Exclude the target column 'Rings'
+    y = data['Rings']   
+    
     return X, y
 
 def getIncomeData():
@@ -104,29 +111,38 @@ def getIncomeData():
     """
     # https://archive.ics.uci.edu/dataset/2/adult
     # fetch dataset 
-    data = fetch_ucirepo(id=2) 
+
+    incomeHeader = ['age', 'workclass', 'fnlwgt', 'education', 
+                    'educationNum', 'maritalStatus', 'occupation', 'relationship', 
+                    'race', 'sex', 'capitalGain', 'capitalLoss', 'hoursPerWeek', 'nativeCountry', 'income']
     
-    for nonNumFeat in data.data.features.columns:
-        if (data.data.features.dtypes[nonNumFeat] != np.int64) and (data.data.features.dtypes[nonNumFeat] != np.float64):
+    pathToFile = os.path.join(base_dir, '../Datasets/extra_datasets_and_zips/adult/adult.data')
+    data = pd.read_csv(pathToFile, sep=',', header=None, names=incomeHeader) 
+
+    for nonNumFeat in data.columns:
+        if nonNumFeat == 'income':
+            continue
+        if (data.dtypes[nonNumFeat] != np.int64) and (data.dtypes[nonNumFeat] != np.float64):
             # Create one-hot encoding
-            one_hot_encoded = pd.get_dummies(data.data.features[nonNumFeat], prefix=nonNumFeat)
+            one_hot_encoded = pd.get_dummies(data[nonNumFeat], prefix=nonNumFeat)
 
             # Concatenate the one-hot encoded columns with the original DataFrame
-            data.data.features = pd.concat([data.data.features, one_hot_encoded], axis=1)
+            data = pd.concat([data, one_hot_encoded], axis=1)
 
             # Drop the original column
-            data.data.features = data.data.features.drop(nonNumFeat, axis=1)
+            data = data.drop(nonNumFeat, axis=1)
 
     # data (as pandas dataframes) 
-    X = data.data.features 
-    y = data.data.targets 
-    y = y.values.ravel()  
+    X = data.drop('income', axis=1) 
+    y = data['income'] 
 
     y[y == '<=50K.'] = '<=50K' 
     y[y == '>50K.'] = '>50K' 
     y[y == '<=50K'] = 'NO' 
     y[y == '>50K'] = "YES" 
     return X, y
+            
+
 
 def getDiabetesData():
     """
@@ -156,12 +172,21 @@ def getCancerData():
     """
     # https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnostic
     # fetch dataset 
-    data = fetch_ucirepo(id=17) 
+
+    cancerHeader = ['ID', 'diagnosis', 'radius1', 'texture1', 'perimeter1', 'area1', 'smoothness1', 
+                    'compactness1', 'concavity1', 'concavePoints1', 'symmetry1', 'fractalDimension1',
+                       'radius2', 'texture2', 'perimeter2', 'area2', 'smoothness2', 
+                    'compactness2', 'concavity2', 'concavePoints2', 'symmetry2', 'fractalDimension2',
+                      'radius3', 'texture3', 'perimeter3', 'area3', 'smoothness3', 
+                    'compactness3', 'concavity3', 'concavePoints3', 'symmetry3', 'fractalDimension3' ]
+    
+    pathToFile = os.path.join(base_dir, '../Datasets/extra_datasets_and_zips/breast+cancer+wisconsin+diagnostic/wdbc.data')
+    data = pd.read_csv(pathToFile, sep=',', header=None, names=cancerHeader) 
     
     # data (as pandas dataframes) 
-    X = data.data.features 
-    y = data.data.targets 
-    y = y.values.ravel()
+    X = data.drop('diagnosis', axis=1) 
+    y = data['diagnosis'] 
+
     return X, y
 
 def getWineData():
@@ -176,12 +201,13 @@ def getWineData():
     """
     # https://archive.ics.uci.edu/dataset/186/wine+quality
     # fetch dataset     
-    data = fetch_ucirepo(id=186) 
+    
+    pathToFile = os.path.join(base_dir, '../Datasets/extra_datasets_and_zips/wine+quality/winequality-red.csv')
+    data = pd.read_csv(pathToFile, sep=';', header=0)
     
     # data (as pandas dataframes) 
-    X = data.data.features 
-    y = data.data.targets 
-    y = y.values.ravel()
+    X = data.drop('quality', axis=1) 
+    y = data['quality']
     return X, y
 
 def getHeartDisease():
@@ -194,22 +220,19 @@ def getHeartDisease():
     :doc-author: Trelent
     """
     # https://archive.ics.uci.edu/dataset/45/heart+disease
-    # fetch dataset 
-    heart_disease = fetch_ucirepo(id=45) 
+    # fetch dataset  
+
+    clevelandHeader = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 
+                       'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal', 'num']
+    pathToFile = os.path.join(base_dir, '../Datasets/extra_datasets_and_zips/heart+disease/processed.cleveland.data')
+    data = pd.read_csv(pathToFile, sep=',', header=None, names=clevelandHeader)
     
-    # data (as pandas dataframes) 
-    tempX = heart_disease.data.features 
-    tempy = heart_disease.data.targets 
-    tempy = tempy.values.ravel()
-
-    # put them both together
-    tempX['target'] = tempy
-
     # remove any rows with NaN or missing values
-    tempX = tempX.dropna()
+    data = data.dropna()
+    data = data[data.apply(lambda row: "?" not in row.values, axis=1)]
 
-    X = tempX.iloc[:,:-1]
-    y = tempX['target']
+    X = data.drop('num', axis=1)
+    y = data['num']
 
     return X, y
 
