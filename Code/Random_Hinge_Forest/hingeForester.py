@@ -1,19 +1,11 @@
-# https://keras.io/examples/structured_data/deep_neural_decision_forests/
-
-import keras
-from keras import layers
-from keras.layers import StringLookup
-from keras import ops
-from tensorflow import data as tf_data
 import math, os, time, random
 import pandas as pd, numpy as np
 import inputDataParser as parse
+from RandomHingeForest import RandomHingeForest, RandomHingeFern
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
-
-'''
 def isEmpty(file_path):
     return os.stat(file_path).st_size == 0
 
@@ -239,5 +231,3 @@ def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     flatConfMatrix = conf_matrix.ravel()
 
     return oob, f1, accuracy, precision, recall, conf_matrix
-
-'''
