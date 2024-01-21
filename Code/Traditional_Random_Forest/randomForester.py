@@ -44,7 +44,7 @@ def regressionRuns(model: str, task: str, allDatasets: list, regDatasets: list, 
                         # add header to raw and agg file
                         with open(saveRawDataHere, 'a') as raw_file:
                             if isEmpty(saveRawDataHere):
-                                raw_file.write(f"numTrees\ttreeDepth\toob\tr2\trmse\tmse\tmae\tbuildTime\n") 
+                                raw_file.write(f"numTrees\ttreeDepth\tr2\trmse\tmse\tmae\tbuildTime\n") 
                         
                         # Set file name system for agg data
                         saveAggDataHere = os.path.join(aggDataPath, f'_{dataset}_{model}_{task}_')
@@ -52,18 +52,18 @@ def regressionRuns(model: str, task: str, allDatasets: list, regDatasets: list, 
                         # add header to agg data file 
                         with open(saveAggDataHere, 'a') as agg_file:
                             if isEmpty(saveAggDataHere):
-                                agg_file.write(f"numTrees\ttreeDepth\toob\tr2\trmse\tmse\tmae\tbuildTime\n")
+                                agg_file.write(f"numTrees\ttreeDepth\tr2\trmse\tmse\tmae\tbuildTime\n")
 
                         # run and time forest building
                         start_time = time.time()
-                        oob, r2, rmse, mse, mae = growRegressor(numEstimators, depth, X, y)
+                        r2, rmse, mse, mae = growRegressor(numEstimators, depth, X, y)
                         finish_time = time.time()
                         buildtime = finish_time - start_time
 
                         # write data to file
                         print(f'saving data in {saveRawDataHere}')
                         with open(saveRawDataHere, 'a') as raw_file:
-                            raw_file.write(f"{numEstimators}\t{depth}\t{oob}\t{r2}\t{rmse}\t{mse}\t{mae}\t{buildtime}\n")
+                            raw_file.write(f"{numEstimators}\t{depth}\t{r2}\t{rmse}\t{mse}\t{mae}\t{buildtime}\n")
 
                         # increment counter    
                         runNumber += 1
@@ -101,7 +101,7 @@ def classificationRuns(model: str, task: str, allDatasets: list, clsDatasets: li
                         # add header to raw and agg file
                         with open(saveRawDataHere, 'a') as raw_file:
                             if isEmpty(saveRawDataHere):
-                                raw_file.write(f"numTrees\ttreeDepth\toob\tf1\taccuracy\tprecision\trecall\tbuildTime\n") 
+                                raw_file.write(f"numTrees\ttreeDepth\tf1\taccuracy\tprecision\trecall\tbuildTime\n") 
                         
                         # Set file name system for agg data
                         saveAggDataHere = os.path.join(aggDataPath, f'_{dataset}_{model}_{task}_')
@@ -109,18 +109,18 @@ def classificationRuns(model: str, task: str, allDatasets: list, clsDatasets: li
                         # add header to agg data file 
                         with open(saveAggDataHere, 'a') as agg_file:
                             if isEmpty(saveAggDataHere):
-                                agg_file.write(f"numTrees\ttreeDepth\toob\tf1\taccuracy\tprecision\trecall\tbuildTime\n")
+                                agg_file.write(f"numTrees\ttreeDepth\tf1\taccuracy\tprecision\trecall\tbuildTime\n")
 
                         # run and time forest building
                         start_time = time.time()
-                        oob, f1, accuracy, precision, recall, conf_matrix = growClassifier(numEstimators, depth, X, y)
+                        f1, accuracy, precision, recall, conf_matrix = growClassifier(numEstimators, depth, X, y)
                         finish_time = time.time()
                         buildtime = finish_time - start_time
 
                         # write data to file
                         print(f'saving data in {saveRawDataHere}')
                         with open(saveRawDataHere, 'a') as raw_file:
-                            raw_file.write(f"{numEstimators}\t{depth}\t{oob}\t{f1}\t{accuracy}\t{precision}\t{recall}\t{buildtime}\n")
+                            raw_file.write(f"{numEstimators}\t{depth}\t{f1}\t{accuracy}\t{precision}\t{recall}\t{buildtime}\n")
 
                         # increment counter    
                         runNumber += 1
@@ -130,14 +130,14 @@ def growRegressor(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     The growRegressor function takes in the number of trees, depth, and data as input.
     It then splits the data into training and testing sets. It initializes a random forest regressor with
     the given parameters (number of trees, depth). It trains the model on the training set and makes predictions on 
-    the test set. Finally it calculates R^2 score, MSE, RMSE and MAEs for both OOB error rate as well as test error rate.
+    the test set. Finally it calculates R^2 score, MSE, RMSE and MAEs
     
     :param NUMTREES: int: Specify the number of trees in the forest
     :param DEPTH: int: Determine the depth of each tree in the forest
     :param X: pd.DataFrame: Pass in the dataframe of features
     :param y: np.ndarray: Pass the target variable to the function
 
-    :return: The oob score, r^2 score, rmse, mse and mae
+    :return: r^2 score, rmse, mse and mae
     :doc-author: Trelent
     """
     # Split the data into training and testing sets
@@ -146,7 +146,7 @@ def growRegressor(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     print(f'\nBuilding regression forest with {NUMTREES} trees each {DEPTH} deep\n')
 
     # Initialize the random forest
-    rf = RandomForestRegressor(n_estimators=NUMTREES, max_depth=DEPTH, max_features='sqrt', bootstrap=True, oob_score=True)
+    rf = RandomForestRegressor(n_estimators=NUMTREES, max_depth=DEPTH, max_features='sqrt', bootstrap=True)
 
     # Train the model
     rf.fit(X_train, y_train)
@@ -166,10 +166,7 @@ def growRegressor(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     # Calculate MAE
     mae = mean_absolute_error(y_test, y_pred)
 
-    # Calculate OOB
-    oob = 1 - rf.oob_score_
-
-    return oob, r2, rmse, mse, mae 
+    return r2, rmse, mse, mae 
 
 
 def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
@@ -183,7 +180,7 @@ def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     :param DEPTH: int: Set the maximum depth of each tree in the forest
     :param X: pd.DataFrame: Pass the dataframe of features to the function
     :param y: np.ndarray: Pass in the labels for the data
-    :return: The following: oob, f1, accuracy, precision, recall, conf_matrix
+    :return: The following: f1, accuracy, precision, recall, conf_matrix
     :doc-author: Trelent
     """
     # Split the data into training and testing sets
@@ -192,7 +189,7 @@ def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     print(f'\nBuilding classification forest with {NUMTREES} trees each {DEPTH} deep\n')
 
     # Initialize the random forest
-    rf = RandomForestClassifier(n_estimators=NUMTREES, max_depth=DEPTH, max_features='sqrt', bootstrap=True, oob_score=True)
+    rf = RandomForestClassifier(n_estimators=NUMTREES, max_depth=DEPTH, max_features='sqrt', bootstrap=True)
 
     # Train the model
     rf.fit(X_train, y_train)
@@ -213,9 +210,6 @@ def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     # print('rec:\t', recall)
 
 
-    # Calculate OOB
-    oob = 1 - rf.oob_score_
-
     # measure f1 
     f1 = f1_score(y_test, y_pred, average='weighted' , zero_division=0)
     # print('f1:\t', f1, '\n')
@@ -225,4 +219,4 @@ def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     conf_matrix = confusion_matrix(y_test, y_pred)
     flatConfMatrix = conf_matrix.ravel()
 
-    return oob, f1, accuracy, precision, recall, conf_matrix
+    return f1, accuracy, precision, recall, conf_matrix
