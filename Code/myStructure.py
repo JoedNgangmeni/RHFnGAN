@@ -3,15 +3,20 @@ import os, shutil
 myDir = os.path.dirname(os.path.abspath(__file__))  # Gets the directory where your script is
 resultDirs = ['RawData', 'AggData', 'Graphs', 'Tables']
 
-regDatasets = ['cali', 'air', 'fb' , 'aba']
-clsDatasets = ['income', 'diabetes', 'cancer', 'wine', 'HAR', 'heart']
-allDatasets = regDatasets + clsDatasets
+# regDatasets = ['cali', 'air', 'fb' , 'aba']
+# clsDatasets = ['income', 'diabetes', 'cancer', 'wine', 'HAR', 'heart']
+# allDatasets = regDatasets + clsDatasets
 
-extDataNames =['California Housing', 'Italy Air Quality', 'Facebook Comment Volume', 'Abalone', 'Pima Native American Diabetes' , 'Wisconsin Breast Cancer Diagnostic', 'Portugal Wine Quality' , 'Human Activity Recognition', 'Adult Income', 'C.H.S.LB Heart Disease']
-extFolderNames = ['cali', 'air', 'fb' , 'aba', 'diabetes', 'cancer', 'wine', 'HAR', 'income', 'heart']
+regDatasets = ['year', 'air']
+clsDatasets = ['MNIST', 'HAR']
+allDatasets =  clsDatasets
+
+
+extDataNames =['California Housing', 'Italy Air Quality', 'Facebook Comment Volume', 'Abalone', 'Pima Native American Diabetes' , 'Wisconsin Breast Cancer Diagnostic', 'Portugal Wine Quality' , 'Human Activity Recognition', 'Adult Income', 'C.H.S.LB Heart Disease', 'Year Prediction MSD']
+extFolderNames = ['cali', 'air', 'fb' , 'aba', 'diabetes', 'cancer', 'wine', 'HAR', 'income', 'heart', 'MNIST', 'year']
 
 risingMetric = ['r2', 'accuracy', 'precision', 'recall', 'f1','buildTime']
-fallingMetric = ['rmse', 'mse', 'mae', 'oob']
+fallingMetric = ['rmse', 'mse', 'mae']
 
 
 def resetStorage(parPath:str, curModel:str):
@@ -89,6 +94,10 @@ def setTitle(fromDataset: str, extDataNames:list):
         myTitle = extDataNames[8] 
     elif fromDataset == 'heart':
         myTitle = extDataNames[9] 
+    elif fromDataset == 'year':
+        myTitle = extDataNames[10] 
+    elif fromDataset == 'MNIST':
+        myTitle = 'MNIST' 
 
     return myTitle
 

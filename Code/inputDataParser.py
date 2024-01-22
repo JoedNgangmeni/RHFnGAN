@@ -1,5 +1,6 @@
 import pandas as pd, numpy as np
 import math, sklearn, os, random, sklearn.datasets
+from tensorflow.keras.datasets import mnist
 
 
 base_dir = os.path.dirname(os.path.abspath(__file__))  # Gets the directory where your script is
@@ -99,6 +100,30 @@ def getAbaData():
     y = data['Rings']   
     
     return X, y
+
+def getYearData():
+    """
+    The getYearData function returns the X and y data for the year prediction dataset.
+    
+    :return: a 2 element tuple (X - the data, and y - the target)
+    :doc-author: Trelent
+    """
+    # https://archive.ics.uci.edu/dataset/203/yearpredictionmsd
+
+    pathToFile = os.path.join(base_dir, '../Datasets/extra_datasets_and_zips/YearPredictionMSD.txt')
+    data = pd.read_csv(pathToFile, sep=',', header=None)
+    num_samples_to_read = 60000
+
+    # Sample 70,000 random rows from the dataset
+    random_subset = data.sample(n=num_samples_to_read)
+
+    X = random_subset.drop(data.columns[0], axis=1)
+    y = random_subset.iloc[:,0]
+
+    return X , y
+
+
+
 
 def getIncomeData():
     """
@@ -255,11 +280,26 @@ def getHARData():
     # return X_train, y_train, X_test, y_test
     return X_train, y_train,
 
+def getMNISTData():
+    """
+    The getMNISTData function returns the MNIST dataset as a tuple of two numpy arrays.
+    The first array is an array of 784-dimensional vectors representing each image in the dataset.
+    The second array is a vector containing the labels for each image.
+    
+    :return: The mnist dataset as a numpy array
+    :doc-author: Trelent
+    """
+    # https://www.kaggle.com/code/ohseokkim/gan-how-does-gan-work
+    (X, y),(_,_) = mnist.load_data() 
+    X = X.reshape(X.shape[0],-1)
+    return X, y
+    
+
+
+
 def getAllData():
     """
-    The getAllData function returns a tuple of tuples. Each inner tuple contains two elements:
-        1) A pandas dataframe containing the dataset's features and labels
-        2) A string describing the dataset's name
+    The getAllData function returns a tuple.
     
     :return: A tuple of tuples
     :doc-author: Trelent
@@ -268,11 +308,13 @@ def getAllData():
     c, d = getAirData()
     e, f = getFbData()
     g, h = getAbaData()
+    s, t = getYearData()
     i, j = getIncomeData()
     k, l = getDiabetesData()
     m, n = getCancerData()
     o, p = getWineData()
     q, r = getHARData()
+    u, v = getMNISTData()
     return a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r
 
 
@@ -285,6 +327,8 @@ def getRegData(dataset: str):
         X,y = getFbData()
     elif dataset == 'aba':
         X,y = getAbaData()
+    elif dataset == 'year':
+        X,y = getYearData()
     return X, y
 
 def getClsData(dataset: str): 
@@ -300,4 +344,6 @@ def getClsData(dataset: str):
         X,y = getHARData()
     elif dataset == 'heart':
         X,y = getHeartDisease()
+    elif dataset == 'MNIST':
+        X,y = getMNISTData()
     return X, y

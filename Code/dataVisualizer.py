@@ -32,10 +32,10 @@ def graphsNTables(subdirectory_path:str, graphs_path:str, tables_path:str, topNU
             print(f"\nProcessing file: {entry} ...")
             fromDataset, modelType, taskType = splitAggDataFileName(entry)
             if taskType == 'reg': # regression task 
-                myHeader = ['numTrees', 'treeDepth', 'oob', 'r2', 'rmse', 'mse', 'mae', 'buildTime']
+                myHeader = ['numTrees', 'treeDepth', 'r2', 'rmse', 'mse', 'mae', 'buildTime']
 
             elif taskType == 'cls': # classification task 
-                myHeader = ['numTrees', 'treeDepth', 'oob', 'f1', 'accuracy', 'precision', 'recall', 'buildTime']
+                myHeader = ['numTrees', 'treeDepth', 'f1', 'accuracy', 'precision', 'recall', 'buildTime']
             
             myAggData = agg.sortAggData(entry_path)
             for errorMetric in myHeader[2:]:
@@ -45,7 +45,7 @@ def graphsNTables(subdirectory_path:str, graphs_path:str, tables_path:str, topNU
                 my3DGraph = make3DGraph(myAggData, fromDataset , errorMetric)
                 storeGraph(my3DGraph, fromDataset, errorMetric, modelType, taskType, '3D', graphs_path)
                 
-                my2DGraph = make2DGraph(myAggData, fromDataset , errorMetric)
+                my2DGraph = make2DGraph(myAggData , errorMetric)
                 storeGraph(my2DGraph, fromDataset, errorMetric, modelType, taskType,'2D', graphs_path)
 
 
@@ -111,10 +111,8 @@ def make3DGraph(myData: pd.DataFrame, fromDataset, errorMetric):
     # plt.show()
     return plt
 
-def make2DGraph(myData: pd.DataFrame, fromDataset, errorMetric):
+def make2DGraph(myData: pd.DataFrame, errorMetric):
     print(f"Making a 2d Graphing of {errorMetric} data...")  
-
-    myTitle = my.setTitle(fromDataset, my.extDataNames) 
     
     X, Y = myData['numTrees'], myData['treeDepth']
    

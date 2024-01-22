@@ -31,12 +31,12 @@ def aggMyData(subdirectory_path, output_path):
             if taskType == 'reg': 
                 myAggData = aggRegFile(entry_path)
                 with open(saveHere, 'a') as myOut:
-                    myOut.write(f"{myAggData['numTrees'].loc[0]}\t{myAggData['treeDepth'].loc[0]}\t{myAggData['oob'].loc[0]}\t{myAggData['r2'].loc[0]}\t{myAggData['rmse'].loc[0]}\t{myAggData['mse'].loc[0]}\t{myAggData['mae'].loc[0]}\t{myAggData['buildTime'].loc[0]}\n")
+                    myOut.write(f"{myAggData['numTrees'].loc[0]}\t{myAggData['treeDepth'].loc[0]}\t{myAggData['r2'].loc[0]}\t{myAggData['rmse'].loc[0]}\t{myAggData['mse'].loc[0]}\t{myAggData['mae'].loc[0]}\t{myAggData['buildTime'].loc[0]}\n")
 
             elif taskType =='cls':
                 myAggData = aggClsFile(entry_path)
                 with open(saveHere, 'a') as myOut:
-                    myOut.write(f"{myAggData['numTrees'].loc[0]}\t{myAggData['treeDepth'].loc[0]}\t{myAggData['oob'].loc[0]}\t{myAggData['f1'].loc[0]}\t{myAggData['accuracy'].loc[0]}\t{myAggData['precision'].loc[0]}\t{myAggData['recall'].loc[0]}\t{myAggData['buildTime'].loc[0]}\n")   
+                    myOut.write(f"{myAggData['numTrees'].loc[0]}\t{myAggData['treeDepth'].loc[0]}\t{myAggData['f1'].loc[0]}\t{myAggData['accuracy'].loc[0]}\t{myAggData['precision'].loc[0]}\t{myAggData['recall'].loc[0]}\t{myAggData['buildTime'].loc[0]}\n")   
 
           
 
@@ -72,7 +72,6 @@ def aggRegFile(entry_path):
     The aggRegFile function takes a single file path as an argument and returns a pandas DataFrame with the following columns:
         - numTrees: mean number of trees in the forests in the file
         - treeDepth: mean depth of each tree in the forests in the file
-        - oob: mean out-of-bag error rate for these runs (0.0 to 1.0)
         - r2, rmse, mse, mae : mean regression metrics for these runs (see https://scikit-learn.org/stable/modules/model_evaluation.html#regression-metrics) 
     
     :param entry_path: Specify the path to the file that is being aggregated
@@ -86,7 +85,6 @@ def aggRegFile(entry_path):
     
     aggData['numTrees'] = [data['numTrees'].mean()]
     aggData['treeDepth'] = [data['treeDepth'].mean()]
-    aggData['oob'] = [data['oob'].mean()]
     aggData['r2'] = [data['r2'].mean()]
     aggData['rmse'] = [data['rmse'].mean()]
     aggData['mse'] = [data['mse'].mean()]
@@ -103,7 +101,7 @@ def aggClsFile(entry_path):
     values for each metric. 
     
     The output dataframe will have one row and 
-    seven columns: numTrees, treeDepth, oob, f_one_score (f-measure), accuracy score, 
+    six columns: numTrees, treeDepth, f_one_score (f-measure), accuracy score, 
     precision score and recall score.
     
     :param entry_path: Specify the path of the file to be aggregated
@@ -117,7 +115,6 @@ def aggClsFile(entry_path):
 
     aggData['numTrees'] = [data['numTrees'].mean()]
     aggData['treeDepth'] = [data['treeDepth'].mean()]
-    aggData['oob'] = [data['oob'].mean()]
     aggData['f1'] = [data['f1'].mean()]
     aggData['accuracy'] = [data['accuracy'].mean()]
     aggData['precision'] = [data['precision'].mean()]
