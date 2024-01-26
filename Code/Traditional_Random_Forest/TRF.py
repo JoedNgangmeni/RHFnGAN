@@ -17,8 +17,8 @@ graphsPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDi
 tablesPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDir}', 'Tables',f'{focusDataDir}'))
 
 # # Get storage ready to store data 
-my.deleteAllDirs(f'{focusParentDir}', f'{focusDataDir}')
-my.makeAllDirs(f'{focusParentDir}', f'{focusDataDir}')
+# my.deleteAllDirs(f'{focusParentDir}', f'{focusDataDir}')
+# my.makeAllDirs(f'{focusParentDir}', f'{focusDataDir}')
 # my.resetStorage(f'{focusParentDir}', f'{focusDataDir}')
 
 print('\nstarting regression runs...\n')
