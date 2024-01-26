@@ -9,7 +9,7 @@ resultDirs = ['RawData', 'AggData', 'Graphs', 'Tables']
 
 regDatasets = ['year', 'air']
 clsDatasets = ['MNIST', 'HAR']
-allDatasets =  clsDatasets
+allDatasets =  regDatasets
 
 
 extDataNames =['California Housing', 'Italy Air Quality', 'Facebook Comment Volume', 'Abalone', 'Pima Native American Diabetes' , 'Wisconsin Breast Cancer Diagnostic', 'Portugal Wine Quality' , 'Human Activity Recognition', 'Adult Income', 'C.H.S.LB Heart Disease', 'Year Prediction MSD']
