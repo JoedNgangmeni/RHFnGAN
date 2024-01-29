@@ -17,9 +17,12 @@ graphsPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDi
 tablesPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDir}', 'Tables',f'{focusDataDir}'))
 
 # # Get storage ready to store data 
-# my.deleteAllDirs(f'{focusParentDir}', f'{focusDataDir}')
-my.makeAllDirs(f'{focusParentDir}', f'{focusDataDir}')
-# my.resetStorage(f'{focusParentDir}', f'{focusDataDir}')
+if focusParentDir == 'TEST':
+    my.deleteAllDirs(f'{focusParentDir}', f'{focusDataDir}')
+    my.makeAllDirs(f'{focusParentDir}', f'{focusDataDir}')
+
+elif focusParentDir == 'RESULTS':
+    my.makeAllDirs(f'{focusParentDir}', f'{focusDataDir}')
 
 print('\nstarting regression runs...\n')
 myForest.regressionRuns(f'{focusDataDir}', 'reg', my.allDatasets, my.regDatasets, ESTNUM, DEPTH, MAX_RUNS, rawDataPath, aggDataPath)
