@@ -9,14 +9,14 @@ resultDirs = ['RawData', 'AggData', 'Graphs', 'Tables']
 
 regDatasets = ['year', 'air']
 clsDatasets = ['MNIST', 'HAR']
-allDatasets =  regDatasets
+allDatasets =  regDatasets + clsDatasets
 
 
 extDataNames =['California Housing', 'Italy Air Quality', 'Facebook Comment Volume', 'Abalone', 'Pima Native American Diabetes' , 'Wisconsin Breast Cancer Diagnostic', 'Portugal Wine Quality' , 'Human Activity Recognition', 'Adult Income', 'C.H.S.LB Heart Disease', 'Year Prediction MSD']
 extFolderNames = ['cali', 'air', 'fb' , 'aba', 'diabetes', 'cancer', 'wine', 'HAR', 'income', 'heart', 'MNIST', 'year']
 
 risingMetric = ['r2', 'accuracy', 'precision', 'recall', 'f1','buildTime']
-fallingMetric = ['rmse', 'mse', 'mae']
+fallingMetric = ['rmse', 'mse', 'mae', 'mlogloss']
 
 
 def resetStorage(parPath:str, curModel:str):

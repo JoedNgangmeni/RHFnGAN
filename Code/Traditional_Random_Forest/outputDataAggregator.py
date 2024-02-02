@@ -36,7 +36,7 @@ def aggMyData(subdirectory_path, output_path):
             elif taskType =='cls':
                 myAggData = aggClsFile(entry_path)
                 with open(saveHere, 'a') as myOut:
-                    myOut.write(f"{myAggData['numTrees'].loc[0]}\t{myAggData['treeDepth'].loc[0]}\t{myAggData['f1'].loc[0]}\t{myAggData['accuracy'].loc[0]}\t{myAggData['precision'].loc[0]}\t{myAggData['recall'].loc[0]}\t{myAggData['buildTime'].loc[0]}\n")   
+                    myOut.write(f"{myAggData['numTrees'].loc[0]}\t{myAggData['treeDepth'].loc[0]}\t{myAggData['mlogloss'].loc[0]}\t{myAggData['f1'].loc[0]}\t{myAggData['accuracy'].loc[0]}\t{myAggData['precision'].loc[0]}\t{myAggData['recall'].loc[0]}\t{myAggData['buildTime'].loc[0]}\n")   
 
           
 
@@ -115,6 +115,7 @@ def aggClsFile(entry_path):
 
     aggData['numTrees'] = [data['numTrees'].mean()]
     aggData['treeDepth'] = [data['treeDepth'].mean()]
+    aggData['mlogloss'] = [data['mlogloss'].mean()]
     aggData['f1'] = [data['f1'].mean()]
     aggData['accuracy'] = [data['accuracy'].mean()]
     aggData['precision'] = [data['precision'].mean()]
