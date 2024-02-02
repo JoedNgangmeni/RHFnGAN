@@ -34,15 +34,10 @@ def graphsNTables(subdirectory_path:str, graphs_path:str, tables_path:str, topNU
             print(f"\nProcessing file: {entry} ...")
             fromDataset, modelType, taskType = splitAggDataFileName(entry)
             if taskType == 'reg': # regression task 
-                myHeader = ['numTrees', 'treeDepth', 'r2_train', 'r2_test',
-                             'rmse_train', 'rmse_test', 'mse_train', 'mse_test',
-                               'mae_train', 'mae_test', 'buildTime_train', 'buildTime_test']
+                myHeader = my.regHeader
 
             elif taskType == 'cls': # classification task 
-                myHeader = ['numTrees', 'treeDepth','mlogloss_train', 'mlogloss_test',
-                             'f1_train', 'f1_test', 'accuracy_train', 'accuracy_test',
-                               'precision_train', 'precision_test', 'recall_train',
-                                 'recall_test', 'buildTime_train', 'buildTime_test']
+                myHeader = my.clsHeader
             
             myAggData = agg.sortAggData(entry_path)
             for errorMetric in myHeader[2:]:

@@ -186,16 +186,6 @@ def growRegressor(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     # y_pred = rf.predict(X_test)
 
     eval_results = xgReg.evals_result()
-
-    r2 = eval_results['validation_1']['r2']
-
-    mse = eval_results['validation_1']['mse']
-
-    rmse = eval_results['validation_1']['rmse']
-
-    mae = eval_results['validation_1']['mae']
-
-    buildtime = eval_results['validation_0']['buildtime']
     
     xgRegResults = pd.DataFrame()
 
