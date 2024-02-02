@@ -2,8 +2,11 @@ regDatasets = ['year', 'air']
 clsDatasets = ['MNIST', 'HAR']
 allDatasets =  regDatasets + clsDatasets
 
-risingMetric = ['r2', 'accuracy', 'precision', 'recall', 'f1','buildTime']
-fallingMetric = ['rmse', 'mse', 'mae', 'mlogloss']
+risingMetric = ['r2_train', 'accuracy_train', 'precision_train', 'recall_train', 'f1_train','buildTime_train'
+                , 'r2_test', 'accuracy_test', 'precision_test', 'recall_test', 'f1_test','buildTime_test']
+
+fallingMetric = ['rmse_train', 'mse_train', 'mae_train', 'mlogloss_train'
+                 ,'rmse_test', 'mse_test', 'mae_test', 'mlogloss_test']
 
 
 def testRun(focusDataDir:str):

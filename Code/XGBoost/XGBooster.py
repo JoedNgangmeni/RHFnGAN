@@ -47,7 +47,6 @@ def classificationRuns(model: str, task: str, allDatasets: list, clsDatasets: li
 
                 runNumber = 1
                 depth +=1
-                print(depth)
                 while (runNumber < MAX_RUNS + 1):
                     print(f'\n{dataset} Run number:\t{runNumber}')
 
@@ -57,7 +56,7 @@ def classificationRuns(model: str, task: str, allDatasets: list, clsDatasets: li
                     # add header to raw file
                     with open(saveRawDataHere, 'a') as raw_file:
                         if isEmpty(saveRawDataHere):
-                            raw_file.write(f"numTrees\ttreeDepth\tmlogloss\tf1\taccuracy\tprecision\trecall\tbuildTime\n") 
+                            raw_file.write(f"numTrees\ttreeDepth\tmlogloss_train\tmlogloss_test\tf1_train\tf1_test\taccuracy_train\taccuracy_test\tprecision_train\tprecision_test\trecall_train\trecall_test\tbuildTime_train\tbuildTime_test\n")
                     
                     # Set file name system for agg data
                     saveAggDataHere = os.path.join(aggDataPath, f'_{dataset}_{model}_{task}_')
@@ -65,7 +64,7 @@ def classificationRuns(model: str, task: str, allDatasets: list, clsDatasets: li
                     # add header to agg data file 
                     with open(saveAggDataHere, 'a') as agg_file:
                         if isEmpty(saveAggDataHere):
-                            agg_file.write(f"numTrees\ttreeDepth\tmlogloss\tf1\taccuracy\tprecision\trecall\tbuildTime\n")
+                            agg_file.write(f"numTrees\ttreeDepth\tmlogloss_train\tmlogloss_test\tf1_train\tf1_test\taccuracy_train\taccuracy_test\tprecision_train\tprecision_test\trecall_train\trecall_test\tbuildTime_train\tbuildTime_test\n")
 
                     # run forest building
                     clsResults = growClassifier(ESTNUM, depth, X, y)
@@ -99,17 +98,19 @@ def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
 
     eval_results = xgCls.evals_result()
 
-    f1 = eval_results['validation_1']['f1']
+    f1_train = eval_results['validation_0']['f1']
+    accuracy_train = eval_results['validation_0']['accuracy']
+    precision_train = eval_results['validation_0']['precision']
+    recall_train = eval_results['validation_0']['recall']
+    mlogloss_train = eval_results['validation_0']['mlogloss']
+    buildTime_train = eval_results['validation_0']['buildtime']
 
-    accuracy = eval_results['validation_1']['accuracy']
-
-    precision = eval_results['validation_1']['precision']
-
-    recall = eval_results['validation_1']['recall']
-
-    mlogloss = eval_results['validation_1']['mlogloss']
-
-    buildtime = eval_results['validation_1']['buildtime']
+    f1_test = eval_results['validation_1']['f1']
+    accuracy_test = eval_results['validation_1']['accuracy']
+    precision_test = eval_results['validation_1']['precision']
+    recall_test = eval_results['validation_1']['recall']
+    mlogloss_test = eval_results['validation_1']['mlogloss']
+    buildTime_test = eval_results['validation_1']['buildtime']
 
     xgClsResults = pd.DataFrame()
 
@@ -120,12 +121,25 @@ def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     
     xgClsResults['numTrees'] = numTrees
     xgClsResults['treeDepth'] = treeDepth
-    xgClsResults['mlogloss'] = mlogloss
-    xgClsResults['f1'] = f1
-    xgClsResults['accuracy'] = accuracy
-    xgClsResults['precision'] = precision
-    xgClsResults['recall'] = recall
-    xgClsResults['buildtime'] = buildtime
+
+    xgClsResults['mlogloss_train'] = mlogloss_train
+    xgClsResults['mlogloss_test'] = mlogloss_test
+
+    xgClsResults['f1_train'] = f1_train
+    xgClsResults['f1_test'] = f1_test
+
+    xgClsResults['accuracy_train'] = accuracy_train
+    xgClsResults['accuracy_test'] = accuracy_test
+
+    xgClsResults['precision_train'] = precision_train
+    xgClsResults['precision_test'] = precision_test
+
+    xgClsResults['recall_train'] = recall_train
+    xgClsResults['recall_test'] = recall_test
+
+    xgClsResults['buildTime_train'] = buildTime_train
+    xgClsResults['buildTime_test'] = buildTime_test
+
 
     # print(eval_results.items())
 
@@ -192,11 +206,36 @@ def growRegressor(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     
     xgRegResults['numTrees'] = numTrees
     xgRegResults['treeDepth'] = treeDepth
-    xgRegResults['r2'] = r2
-    xgRegResults['rmse'] = rmse
-    xgRegResults['mse'] = mse
-    xgRegResults['mae'] = mae
-    xgRegResults['buildtime'] = buildtime
+
+    r2_train = eval_results['validation_0']['r2']
+    rmse_train = eval_results['validation_0']['rmse']
+    mse_train = eval_results['validation_0']['mse']
+    mae_train = eval_results['validation_0']['mae']
+    buildTime_train = eval_results['validation_0']['buildtime']
+
+    r2_test = eval_results['validation_1']['r2']
+    rmse_test = eval_results['validation_1']['rmse']
+    mse_test = eval_results['validation_1']['mse']
+    mae_test = eval_results['validation_1']['mae']
+    buildTime_test = eval_results['validation_1']['buildtime']
+
+
+
+    xgRegResults['r2_train'] = r2_train
+    xgRegResults['r2_test'] = r2_test
+
+    xgRegResults['rmse_train'] = rmse_train
+    xgRegResults['rmse_test'] = rmse_test
+
+    xgRegResults['mse_train'] = mse_train
+    xgRegResults['mse_test'] = mse_test
+
+    xgRegResults['mae_train'] = mae_train
+    xgRegResults['mae_test'] = mae_test
+
+
+    xgRegResults['buildTime_train'] = buildTime_train
+    xgRegResults['buildTime_test'] = buildTime_test
 
     # print(xgRegResults)
 
@@ -212,7 +251,6 @@ def regressionRuns(model: str, task: str, allDatasets: list, clsDatasets: list, 
 
                 runNumber = 1
                 depth +=1
-                print(depth)
                 while (runNumber < MAX_RUNS + 1):
                     print(f'\n{dataset} Run number:\t{runNumber}')
 
@@ -222,7 +260,8 @@ def regressionRuns(model: str, task: str, allDatasets: list, clsDatasets: list, 
                     # add header to raw file
                     with open(saveRawDataHere, 'a') as raw_file:
                         if isEmpty(saveRawDataHere):
-                            raw_file.write(f"numTrees\ttreeDepth\tr2\trmse\tmse\tmae\tbuildTime\n") 
+                            raw_file.write(f"numTrees\ttreeDepth\tr2_train\tr2_test\trmse_train\trmse_test\tmse_train\tmse_test\tmae_train\tmae_test\tbuildTime_train\tbuildTime_test\n") 
+
                     
                     # Set file name system for agg data
                     saveAggDataHere = os.path.join(aggDataPath, f'_{dataset}_{model}_{task}_')
@@ -230,7 +269,7 @@ def regressionRuns(model: str, task: str, allDatasets: list, clsDatasets: list, 
                     # add header to agg data file 
                     with open(saveAggDataHere, 'a') as agg_file:
                         if isEmpty(saveAggDataHere):
-                            agg_file.write(f"numTrees\ttreeDepth\tr2\trmse\tmse\tmae\tbuildTime\n")
+                            agg_file.write(f"numTrees\ttreeDepth\tr2_train\tr2_test\trmse_train\trmse_test\tmse_train\tmse_test\tmae_train\tmae_test\tbuildTime_train\tbuildTime_test\n") 
 
                     # run forest building
                     regResults = growRegressor(ESTNUM, depth, X, y)
