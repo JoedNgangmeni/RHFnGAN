@@ -131,7 +131,7 @@ def make2DGraph(myData: pd.DataFrame, errorMetric):
     ax[0].scatter(X, myData[errorMetric2], color='green', label=errorMetric2)
     ax[0].set_title(f'{em1Split[0].upper()} {em1Split[1]} and {em2Split[1]} vs. {X.name}')
     ax[0].set_xlabel(f'{X.name}')
-    ax[0].set_ylabel('Error Metrics')
+    ax[0].set_ylabel(f'{em1Split[0].upper()}')
     ax[0].legend()
 
     # Scatter plot for the second subplot (right side)
@@ -139,7 +139,7 @@ def make2DGraph(myData: pd.DataFrame, errorMetric):
     ax[1].scatter(Y, myData[errorMetric2], color='orange', label=errorMetric2)
     ax[1].set_title(f'{em1Split[0].upper()} {em1Split[1]} and {em2Split[1]} vs. {Y.name}')
     ax[1].set_xlabel(f'{Y.name}')
-    ax[1].set_ylabel('Error Metrics')
+    ax[1].set_ylabel(f'{em1Split[0].upper()}')
     ax[1].legend()
 
     # Returning the plot object
