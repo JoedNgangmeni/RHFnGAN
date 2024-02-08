@@ -24,17 +24,17 @@ if focusParentDir == 'TEST':
 elif focusParentDir == 'RESULTS':
     my.makeAllDirs(f'{focusParentDir}', f'{focusDataDir}')
 
-print('\nstarting regression runs...\n')
-myForest.regressionRuns(f'{focusDataDir}', 'reg', my.allDatasets, my.regDatasets, ESTNUM, DEPTH, MAX_RUNS, rawDataPath, aggDataPath)
-print('\nregression runs complete...\n')
+# print('\nstarting regression runs...\n')
+# myForest.regressionRuns(f'{focusDataDir}', 'reg', my.allDatasets, my.regDatasets, ESTNUM, DEPTH, MAX_RUNS, rawDataPath, aggDataPath)
+# print('\nregression runs complete...\n')
 
-print('\nstarting classification runs...\n')
-myForest.classificationRuns(f'{focusDataDir}', 'cls', my.allDatasets, my.clsDatasets, ESTNUM, DEPTH, MAX_RUNS, rawDataPath, aggDataPath)
-print('\nclassification runs complete...\n')
+# print('\nstarting classification runs...\n')
+# myForest.classificationRuns(f'{focusDataDir}', 'cls', my.allDatasets, my.clsDatasets, ESTNUM, DEPTH, MAX_RUNS, rawDataPath, aggDataPath)
+# print('\nclassification runs complete...\n')
 
-print('\nstarting data aggregation...\n')
-agg.aggMyData(rawDataPath,aggDataPath)
-print('\ndata aggregation complete...\n')
+# print('\nstarting data aggregation...\n')
+# agg.aggMyData(rawDataPath,aggDataPath)
+# print('\ndata aggregation complete...\n')
 
 print('\nstarting data tabling and graphing...\n')
 vis.graphsNTables(aggDataPath, graphsPath, tablesPath, topNUM)
