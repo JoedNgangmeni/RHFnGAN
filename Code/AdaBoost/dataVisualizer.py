@@ -5,6 +5,7 @@ import pandas as pd, matplotlib.pyplot as plt
 import outputDataAggregator as agg
 import myStructure as my
 import globalStuff as glbl
+from sklearn.preprocessing import MinMaxScaler
 
 def graphsNTables(subdirectory_path:str, graphs_path:str, tables_path:str, topNUM:int):
     """
@@ -47,9 +48,8 @@ def graphsNTables(subdirectory_path:str, graphs_path:str, tables_path:str, topNU
                 my3DGraph = make3DGraph(myAggData, fromDataset , errorMetric)
                 storeGraph(my3DGraph, fromDataset, errorMetric, modelType, taskType, '3D', graphs_path)
 
-                if 'train' in errorMetric:
-                    my2DGraph = make2DGraph(myAggData , errorMetric)
-                    storeGraph(my2DGraph, fromDataset, errorMetric, modelType, taskType,'2D', graphs_path)
+                my2DGraph = make2DGraph(myAggData , errorMetric)
+                storeGraph(my2DGraph, fromDataset, errorMetric, modelType, taskType,'2D', graphs_path)
 
 
 
@@ -94,6 +94,12 @@ def make3DGraph(myData: pd.DataFrame, fromDataset, errorMetric):
     """
     print(f"Making a 3D Graphing of {errorMetric} data...")  
 
+    #scale data
+    print(f"Scaling the data...\n")  
+    min_max_scaler = MinMaxScaler()
+    myData = pd.DataFrame(min_max_scaler.fit_transform(myData), columns=myData.columns)
+
+
     myTitle = glbl.setTitle(fromDataset, glbl.extDataNames) 
     
     X, Y = myData['numTrees'], myData['treeDepth']
@@ -115,34 +121,30 @@ def make3DGraph(myData: pd.DataFrame, fromDataset, errorMetric):
     return plt
 
 def make2DGraph(myData: pd.DataFrame, errorMetric):
-    em1Split = errorMetric.split('_')
-    errorMetric2 = em1Split[0]+ '_test'
-    em2Split = errorMetric2.split('_')
+    #scale data
+    print(f"Scaling the data...\n")  
+    min_max_scaler = MinMaxScaler()
+    myData = pd.DataFrame(min_max_scaler.fit_transform(myData), columns=myData.columns)
 
 
-    print(f"Making a 2D Graph of {errorMetric.upper()} and {errorMetric2.upper()} data...")  
+
+    print(f"Making a 2D Graph of {errorMetric.upper()} data...")  
     
     X, Y = myData['numTrees'], myData['treeDepth']
    
     fig, ax = plt.subplots(1, 2, figsize=(10, 4), tight_layout=True)
 
-    # Scatter plot for the first subplot (left side)
-    ax[0].scatter(X, myData[errorMetric], color='blue', label=errorMetric)
-    ax[0].scatter(X, myData[errorMetric2], color='green', label=errorMetric2)
-    ax[0].set_title(f'{em1Split[0].upper()} {em1Split[1]} and {em2Split[1]} vs. {X.name}')
+    ax[0].scatter(X, myData[errorMetric], color='blue')
+    ax[0].set_title(f'{errorMetric} vs. {X.name}')
     ax[0].set_xlabel(f'{X.name}')
-    ax[0].set_ylabel('Error Metrics')
-    ax[0].legend()
+    ax[0].set_ylabel(f'{errorMetric}')
 
-    # Scatter plot for the second subplot (right side)
-    ax[1].scatter(Y, myData[errorMetric], color='red', label=errorMetric)
-    ax[1].scatter(Y, myData[errorMetric2], color='orange', label=errorMetric2)
-    ax[1].set_title(f'{em1Split[0].upper()} {em1Split[1]} and {em2Split[1]} vs. {Y.name}')
+
+    ax[1].scatter(Y, myData[errorMetric], color='red')
+    ax[1].set_title(f'{errorMetric} vs. {Y.name}')
     ax[1].set_xlabel(f'{Y.name}')
-    ax[1].set_ylabel('Error Metrics')
-    ax[1].legend()
+    ax[1].set_ylabel(f'{errorMetric}')
 
-    # Returning the plot object
     return plt
 
 

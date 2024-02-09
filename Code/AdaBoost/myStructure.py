@@ -2,20 +2,14 @@ regDatasets = ['year', 'air']
 clsDatasets = ['MNIST', 'HAR']
 allDatasets =  regDatasets + clsDatasets
 
-regHeader = ['numTrees', 'treeDepth', 'r2_train', 'r2_test',
-                             'rmse_train', 'rmse_test', 'mse_train', 'mse_test',
-                               'mae_train', 'mae_test', 'buildTime_train', 'buildTime_test']
+regHeader = ['numTrees', 'treeDepth', 'r2', 'rmse', 'mse',
+                               'mae', 'buildTime']
 
-clsHeader = ['numTrees', 'treeDepth','mlogloss_train', 'mlogloss_test',
-                             'f1_train', 'f1_test', 'accuracy_train', 'accuracy_test',
-                               'precision_train', 'precision_test', 'recall_train',
-                                 'recall_test', 'buildTime_train', 'buildTime_test']
+clsHeader = ['numTrees', 'treeDepth','f1', 'accuracy', 'precision', 'recall','buildTime']
 
-risingMetric = ['r2_train', 'accuracy_train', 'precision_train', 'recall_train', 'f1_train','buildTime_train'
-                , 'r2_test', 'accuracy_test', 'precision_test', 'recall_test', 'f1_test','buildTime_test']
+risingMetric = ['r2', 'accuracy', 'precision', 'recall', 'f1','buildTime']
 
-fallingMetric = ['rmse_train', 'mse_train', 'mae_train', 'mlogloss_train'
-                 ,'rmse_test', 'mse_test', 'mae_test', 'mlogloss_test']
+fallingMetric = ['rmse', 'mse', 'mae', 'mlogloss']
 
 
 def testRun(focusDataDir:str):

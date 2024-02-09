@@ -5,192 +5,152 @@ from sklearn.ensemble import AdaBoostClassifier, AdaBoostRegressor
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, log_loss
+
 
 def isEmpty(file_path):
     return os.stat(file_path).st_size == 0
 
 def regressionRuns(model: str, task: str, allDatasets: list, regDatasets: list, ESTNUM: int, DEPTH: int, MAX_RUNS: int, rawDataPath: str, aggDataPath: str ):
-    """
-    The regressionRuns function is used to run the Random Forest Regressor on a given dataset.
-   
-    :param model: str: Specify the type of model to be used ('RF', 'XGB', etc...)
-    :param task: str: Specify the type of task being performed ('reg')
-    :param allDatasets: list: a list with the abreviated names of all available datasets
-    :param regDatasets: list: Specify which datasets to run the regression on
-    :param ESTNUM: int: Set the number of trees in the forest
-    :param DEPTH: int: Set the depth of each tree in the forest
-    :param MAX_RUNS: int: Set the number of times we want to run the model with that number of trees and depth
-    :param rawDataPath: str: Specify the path to the directory where you want your raw data saved
-    :param aggDataPath: str: Specify the path to where the aggregated data will be stored
-    :return: None
-    :doc-author: Trelent
-    """
+
     for dataset in allDatasets:
         if dataset in regDatasets: 
 
             X,y = parse.getRegData(dataset)
-                
-            for numEstimators in ESTNUM:
-                for depth in DEPTH:
-                    runNumber = 1
+            for depth in range(DEPTH+1):
 
-                    while (runNumber < MAX_RUNS + 1):
-                        print(f'\nRun number:\t{runNumber}')
+                runNumber = 1
+                depth +=1
+                while (runNumber < MAX_RUNS + 1):
+                    print(f'\nRun number:\t{runNumber}')
 
+                    # run forest building
+                    regResults = growRegressor(ESTNUM, depth, X, y)
 
-                        # Set file name system for raw data
-                        saveRawDataHere = os.path.join(rawDataPath, dataset, f'_{numEstimators}_{depth}_{dataset}_{model}_{task}_')
+                    column_names = regResults.columns.tolist()
 
-                        # add header to raw and agg file
-                        with open(saveRawDataHere, 'a') as raw_file:
-                            if isEmpty(saveRawDataHere):
-                                raw_file.write(f"numTrees\ttreeDepth\toob\tr2\trmse\tmse\tmae\tbuildTime\n") 
-                        
-                        # Set file name system for agg data
-                        saveAggDataHere = os.path.join(aggDataPath, f'_{dataset}_{model}_{task}_')
-                        
-                        # add header to agg data file 
-                        with open(saveAggDataHere, 'a') as agg_file:
-                            if isEmpty(saveAggDataHere):
-                                agg_file.write(f"numTrees\ttreeDepth\toob\tr2\trmse\tmse\tmae\tbuildTime\n")
+                    # Join column names with tab separators
+                    header = '\t'.join(column_names)
 
-                        # run and time forest building
-                        start_time = time.time()
-                        oob, r2, rmse, mse, mae = growRegressor(numEstimators, depth, X, y)
-                        finish_time = time.time()
-                        buildtime = finish_time - start_time
+                    # Set file name system for raw data
+                    saveRawDataHere = os.path.join(rawDataPath, dataset, f'_{ESTNUM}_{depth}_{dataset}_{model}_{task}_')
 
-                        # write data to file
-                        print(f'saving data in {saveRawDataHere}')
-                        with open(saveRawDataHere, 'a') as raw_file:
-                            raw_file.write(f"{numEstimators}\t{depth}\t{oob}\t{r2}\t{rmse}\t{mse}\t{mae}\t{buildtime}\n")
+                    # add header to raw and agg file
+                    with open(saveRawDataHere, 'a') as raw_file:
+                        if isEmpty(saveRawDataHere):
+                            raw_file.write(f"{header}\n") 
+                    
+                    # Set file name system for agg data
+                    saveAggDataHere = os.path.join(aggDataPath, f'_{dataset}_{model}_{task}_')
+                    
+                    # add header to agg data file 
+                    with open(saveAggDataHere, 'a') as agg_file:
+                        if isEmpty(saveAggDataHere):
+                            agg_file.write(f"{header}\n")
 
-                        # increment counter    
-                        runNumber += 1
+                    
+                    # write data to file
+                    print(f'saving data in {saveRawDataHere}')
+                    regResults.to_csv(saveRawDataHere, mode='a', index=False, header=False, sep='\t')
+                    # increment counter    
+                    runNumber += 1
 
 def classificationRuns(model: str, task: str, allDatasets: list, clsDatasets: list, ESTNUM: int, DEPTH: int, MAX_RUNS: int, rawDataPath: str, aggDataPath: str ):
-    """
-    The regressionRuns function is used to run the Random Forest Regressor on a given dataset.
-   
-    :param model: str: Specify the type of model to be used ('RF', 'XGB', etc...)
-    :param task: str: Specify the type of task being performed ('cls')
-    :param allDatasets: list: a list with the abreviated names of all available datasets
-    :param regDatasets: list: Specify which datasets to run the regression on
-    :param ESTNUM: int: Set the number of trees in the forest
-    :param DEPTH: int: Set the depth of each tree in the forest
-    :param MAX_RUNS: int: Set the number of times we want to run the model with that number of trees and depth
-    :param rawDataPath: str: Specify the path to the directory where you want your raw data saved
-    :param aggDataPath: str: Specify the path to where the aggregated data will be stored
-    :return: None
-    :doc-author: Trelent
-    """
+
     for dataset in allDatasets:
         if dataset in clsDatasets: 
 
             # Get the data 
             X,y = parse.getClsData(dataset)
+            for depth in range(DEPTH+1):
 
-            for numEstimators in ESTNUM:
-                for depth in DEPTH:
-                    runNumber = 1
-                    while (runNumber < MAX_RUNS + 1):
-                        print(f'\nRun number:\t{runNumber}')
+                runNumber = 1
+                depth +=1
+                while (runNumber < MAX_RUNS + 1):
+                    print(f'\nRun number:\t{runNumber}')
 
-                        # Set file name system for raw data
-                        saveRawDataHere = os.path.join(rawDataPath, dataset, f'_{numEstimators}_{depth}_{dataset}_{model}_{task}_')
+                    # run forest building
+                    clsResults = growClassifier(ESTNUM, depth, X, y)
 
-                        # add header to raw and agg file
-                        with open(saveRawDataHere, 'a') as raw_file:
-                            if isEmpty(saveRawDataHere):
-                                raw_file.write(f"numTrees\ttreeDepth\toob\tf1\taccuracy\tprecision\trecall\tbuildTime\n") 
-                        
-                        # Set file name system for agg data
-                        saveAggDataHere = os.path.join(aggDataPath, f'_{dataset}_{model}_{task}_')
-                        
-                        # add header to agg data file 
-                        with open(saveAggDataHere, 'a') as agg_file:
-                            if isEmpty(saveAggDataHere):
-                                agg_file.write(f"numTrees\ttreeDepth\toob\tf1\taccuracy\tprecision\trecall\tbuildTime\n")
+                    column_names = clsResults.columns.tolist()
 
-                        # run and time forest building
-                        start_time = time.time()
-                        oob, f1, accuracy, precision, recall, conf_matrix = growClassifier(numEstimators, depth, X, y)
-                        finish_time = time.time()
-                        buildtime = finish_time - start_time
+                    # Join column names with tab separators
+                    header = '\t'.join(column_names)
 
-                        # write data to file
-                        print(f'saving data in {saveRawDataHere}')
-                        with open(saveRawDataHere, 'a') as raw_file:
-                            raw_file.write(f"{numEstimators}\t{depth}\t{oob}\t{f1}\t{accuracy}\t{precision}\t{recall}\t{buildtime}\n")
+                    # Set file name system for raw data
+                    saveRawDataHere = os.path.join(rawDataPath, dataset, f'_{ESTNUM}_{depth}_{dataset}_{model}_{task}_')
 
-                        # increment counter    
-                        runNumber += 1
+                    # add header to raw and agg file
+                    with open(saveRawDataHere, 'a') as raw_file:
+                        if isEmpty(saveRawDataHere):
+                            raw_file.write(f"{header}\n") 
+                    
+                    # Set file name system for agg data
+                    saveAggDataHere = os.path.join(aggDataPath, f'_{dataset}_{model}_{task}_')
+                    
+                    # add header to agg data file 
+                    with open(saveAggDataHere, 'a') as agg_file:
+                        if isEmpty(saveAggDataHere):
+                            agg_file.write(f"{header}\n")
+
+                    
+                    # write data to file
+                    print(f'saving data in {saveRawDataHere}')
+                    clsResults.to_csv(saveRawDataHere, mode='a', index=False, header=False, sep='\t')
+                    # increment counter    
+                    runNumber += 1
 
 def growRegressor(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
-    """
-    The growRegressor function takes in the number of trees, depth, and data as input.
-    It then splits the data into training and testing sets. It initializes a random forest regressor with
-    the given parameters (number of trees, depth). It trains the model on the training set and makes predictions on 
-    the test set. Finally it calculates R^2 score, MSE, RMSE and MAEs for both OOB error rate as well as test error rate.
-    
-    :param NUMTREES: int: Specify the number of trees in the forest
-    :param DEPTH: int: Determine the depth of each tree in the forest
-    :param X: pd.DataFrame: Pass in the dataframe of features
-    :param y: np.ndarray: Pass the target variable to the function
 
-    :return: The oob score, r^2 score, rmse, mse and mae
-    :doc-author: Trelent
-    """
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, shuffle=True)
 
     print(f'\nBuilding regression forest with {NUMTREES} trees each {DEPTH} deep\n')
 
-     # Initialize the week classifier 
-    base_estimator = DecisionTreeRegressor(max_depth=DEPTH)
+    base_estimator = DecisionTreeClassifier(max_depth=DEPTH)
 
-    # Initialize adaboost 
-    ada = AdaBoostRegressor(estimator=base_estimator, n_estimators=NUMTREES)
+    start_time = time.time()
 
-    # Train the model
+    ada = AdaBoostClassifier(estimator=base_estimator, n_estimators=NUMTREES)
     ada.fit(X_train, y_train)
 
-    # Make predictions on the test set
-    y_pred = ada.predict(X_test)
+    elapsed_time = time.time() - start_time
 
-    # Calculate R^2 score
-    r2 = r2_score(y_test, y_pred)
+    # Use staged_predict to get staged predictions
+    staged_test_predictions = ada.staged_predict(X_test)
+    
+    r2s, rmses, mses, maes, buildtime = [], [], [], [], []
+    # Iterate over staged predictions and evaluate performance at each stage
+    for i, y_pred in enumerate(staged_test_predictions, start=1):
+        r2s.append(r2_score(y_test, y_pred))
+        mses.append(mean_squared_error(y_test, y_pred))
+        rmses.append(math.sqrt(mean_squared_error(y_test, y_pred)))
+        maes.append(mean_absolute_error(y_test, y_pred))
 
-    # Calculate MSE
-    mse = mean_squared_error(y_test, y_pred)
+    adaRegResults = pd.DataFrame()
 
-    # Calculate RMSE
-    rmse = math.sqrt(mse)
+    numTrees, treeDepth = [], [] 
+    for x in range(NUMTREES):
+        numTrees.append(x+1) 
+        treeDepth.append(DEPTH)
+        buildtime.append(elapsed_time)
+    
+    adaRegResults['numTrees'] = numTrees
+    adaRegResults['treeDepth'] = treeDepth
+    adaRegResults['r2'] = r2s
+    adaRegResults['rmse'] = rmses
+    adaRegResults['mse'] = mses
+    adaRegResults['mae'] = maes
+    adaRegResults['buildTime'] = buildtime
 
-    # Calculate MAE
-    mae = mean_absolute_error(y_test, y_pred)
+    
+    # print(adaClsResults)
+    return adaRegResults
 
-    # Fake OOB values because only traditional rf have OOB
-    oob = random.randint(1, 1000) 
-
-    return oob, r2, rmse, mse, mae 
 
 
 def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
-    """
-    The growClassifier function takes in the number of trees, depth, and data as input.
-    It then splits the data into training and testing sets. It initializes a random forest classifier with 
-    the given parameters (number of trees, depth). The model is trained on the training set and predictions are made on 
-    the test set. Accuracy is measured using accuracy_score from sklearn's metrics module. Precision is measured using precision_score from sklearn's metrics module. Recall is measured using recall_score from sklearn's metrics module.
-    
-    :param NUMTREES: int: Set the number of trees in the random forest
-    :param DEPTH: int: Set the maximum depth of each tree in the forest
-    :param X: pd.DataFrame: Pass the dataframe of features to the function
-    :param y: np.ndarray: Pass in the labels for the data
-    :return: The following: oob, f1, accuracy, precision, recall, conf_matrix
-    :doc-author: Trelent
-    """
+
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, shuffle=True)
 
@@ -199,38 +159,40 @@ def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     # Initialize the week classifier 
     base_estimator = DecisionTreeClassifier(max_depth=DEPTH)
 
-    # Initialize adaboost 
-    ada = AdaBoostClassifier(estimator=base_estimator, n_estimators=NUMTREES)
+    start_time = time.time()
 
-    # Train the model
+    ada = AdaBoostClassifier(estimator=base_estimator, n_estimators=NUMTREES)
     ada.fit(X_train, y_train)
 
-    # Make predictions on the test set
-    y_pred = ada.predict(X_test)
+    elapsed_time = time.time() - start_time
 
-    # measure Accuracy 
-    accuracy = accuracy_score(y_test, y_pred)
-    # print('acc:\t', accuracy)
+    # Use staged_predict to get staged predictions
+    staged_test_predictions = ada.staged_predict(X_test)
+    
+    f1_test, accuracy_test, precision_test, recall_test, buildtime_test = [], [], [], [], []
+    # Iterate over staged predictions and evaluate performance at each stage
+    for i, y_pred in enumerate(staged_test_predictions, start=1):
+        accuracy_test.append(accuracy_score(y_test, y_pred))
+        precision_test.append(precision_score(y_test, y_pred, average="weighted", zero_division=0))
+        recall_test.append(recall_score(y_test, y_pred, average='weighted', zero_division=0))
+        f1_test.append(f1_score(y_test, y_pred, average='weighted', zero_division=0))
 
-    # measure precision 
-    precision = precision_score(y_test, y_pred, average="weighted", zero_division=0)
-    # print('prec:\t', precision)
+    adaClsResults = pd.DataFrame()
 
-    # measure recall 
-    recall = recall_score(y_test, y_pred, average='weighted', zero_division=0)
-    # print('rec:\t', recall)
+    numTrees, treeDepth = [], [] 
+    for x in range(NUMTREES):
+        numTrees.append(x+1) 
+        treeDepth.append(DEPTH)
+        buildtime_test.append(elapsed_time)
+    
+    adaClsResults['numTrees'] = numTrees
+    adaClsResults['treeDepth'] = treeDepth
+    adaClsResults['f1'] = f1_test
+    adaClsResults['accuracy'] = accuracy_test
+    adaClsResults['precision'] = precision_test
+    adaClsResults['recall'] = recall_test
+    adaClsResults['buildTime'] = buildtime_test
 
-
-    # Fake OOB values because only traditional rf have OOB
-    oob = random.randint(1, 1000) 
-
-    # measure f1 
-    f1 = f1_score(y_test, y_pred, average='weighted' , zero_division=0)
-    # print('f1:\t', f1, '\n')
-
-
-    # create confusion matrix
-    conf_matrix = confusion_matrix(y_test, y_pred)
-    flatConfMatrix = conf_matrix.ravel()
-
-    return oob, f1, accuracy, precision, recall, conf_matrix
+    
+    # print(adaClsResults)
+    return adaClsResults
