@@ -55,17 +55,17 @@ def regressionRuns(model: str, task: str, allDatasets: list, regDatasets: list, 
                                 agg_file.write(f"numTrees\ttreeDepth\tr2\trmse\tmse\tmae\tbuildTime\n")
 
                         # run and time forest building
-                        start_time = time.time()
-                        r2, rmse, mse, mae = growRegressor(numEstimators, depth, X, y)
-                        finish_time = time.time()
-                        buildtime = finish_time - start_time
+                        # start_time = time.time()
+                        # r2, rmse, mse, mae = growRegressor(numEstimators, depth, X, y)
+                        # finish_time = time.time()
+                        # buildtime = finish_time - start_time
 
-                        # write data to file
-                        print(f'saving data in {saveRawDataHere}')
-                        with open(saveRawDataHere, 'a') as raw_file:
-                            raw_file.write(f"{numEstimators}\t{depth}\t{r2}\t{rmse}\t{mse}\t{mae}\t{buildtime}\n")
+                        # # write data to file
+                        # print(f'saving data in {saveRawDataHere}')
+                        # with open(saveRawDataHere, 'a') as raw_file:
+                        #     raw_file.write(f"{numEstimators}\t{depth}\t{r2}\t{rmse}\t{mse}\t{mae}\t{buildtime}\n")
 
-                        # increment counter    
+                        # # increment counter    
                         runNumber += 1
 
 def classificationRuns(model: str, task: str, allDatasets: list, clsDatasets: list, ESTNUM: int, DEPTH: int, MAX_RUNS: int, rawDataPath: str, aggDataPath: str ):
@@ -111,16 +111,16 @@ def classificationRuns(model: str, task: str, allDatasets: list, clsDatasets: li
                             if isEmpty(saveAggDataHere):
                                 agg_file.write(f"numTrees\ttreeDepth\tf1\taccuracy\tprecision\trecall\tbuildTime\n")
 
-                        # run and time forest building
-                        start_time = time.time()
-                        f1, accuracy, precision, recall, conf_matrix = growClassifier(numEstimators, depth, X, y)
-                        finish_time = time.time()
-                        buildtime = finish_time - start_time
+                        # # run and time forest building
+                        # start_time = time.time()
+                        # f1, accuracy, precision, recall, conf_matrix = growClassifier(numEstimators, depth, X, y)
+                        # finish_time = time.time()
+                        # buildtime = finish_time - start_time
 
-                        # write data to file
-                        print(f'saving data in {saveRawDataHere}')
-                        with open(saveRawDataHere, 'a') as raw_file:
-                            raw_file.write(f"{numEstimators}\t{depth}\t{f1}\t{accuracy}\t{precision}\t{recall}\t{buildtime}\n")
+                        # # write data to file
+                        # print(f'saving data in {saveRawDataHere}')
+                        # with open(saveRawDataHere, 'a') as raw_file:
+                        #     raw_file.write(f"{numEstimators}\t{depth}\t{f1}\t{accuracy}\t{precision}\t{recall}\t{buildtime}\n")
 
                         # increment counter    
                         runNumber += 1

@@ -15,10 +15,10 @@ base_dir = os.path.dirname(os.path.abspath(__file__))  # Gets the directory wher
 
 focusParentDir = 'RESULTS'
 focusDataDir = 'TRF'
-# MAX_RUNS = 5
-# ESTNUM = 500
-# DEPTH = 30
-topNUM = 10
+# MAX_RUNS = 2
+# ESTNUM = 5
+# DEPTH = 10
+# topNUM = 10
 
 rawDataPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDir}', 'RawData', f'{focusDataDir}'))
 aggDataPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDir}', 'AggData',f'{focusDataDir}'))
@@ -41,23 +41,23 @@ tablesPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDi
 # myForest.classificationRuns(f'{focusDataDir}', 'cls', my.allDatasets, my.clsDatasets, ESTNUM, DEPTH, MAX_RUNS, rawDataPath, aggDataPath)
 # print('\nclassification runs complete...\n')
 
-print('\nstarting data aggregation...\n')
-agg.aggMyData(rawDataPath,aggDataPath)
-print('\ndata aggregation complete...\n')
+# print('\nstarting data aggregation...\n')
+# agg.aggMyData(rawDataPath,aggDataPath)
+# print('\ndata aggregation complete...\n')
 
-print('\nstarting data tabling and graphing...\n')
-vis.graphsNTables(aggDataPath, graphsPath, tablesPath, topNUM)
-print('\ndata tabling and graphing complete...\n')
+# print('\nstarting data tabling and graphing...\n')
+# vis.graphsNTables(aggDataPath, graphsPath, tablesPath, topNUM)
+# print('\ndata tabling and graphing complete...\n')
 
 # '''
 
-# import inputDataParser as ID, time
+import inputDataParser as ID, time
 
-# X,y = ID.getHARData()
-# thisRunsData =['year']
-# # start = time.time()
-# myForest.remakeRegressionRuns(f'{focusDataDir}', 'reg', thisRunsData, my.regDatasets, 361, 29, 4, rawDataPath, aggDataPath)
-# end = time.time()
+X,y = ID.getHARData()
+thisRunsData =['year']
+# start = time.time()
+myForest.remakeRegressionRuns(f'{focusDataDir}', 'reg', thisRunsData, my.regDatasets, 91, 9, 6, rawDataPath, aggDataPath)
+end = time.time()
 # print(f'year x: {X[1]}\n')
 # print(y.shape)
 # print(end-start)
