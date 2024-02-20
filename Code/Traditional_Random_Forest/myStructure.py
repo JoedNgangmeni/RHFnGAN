@@ -16,6 +16,15 @@ graphTheseTrees = [1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11., 21., 51., 101.,
 
 
 def testRun(focusDataDir:str):
+    """
+    The testRun function is used to run a small number of tests on the data.
+    It is useful for testing different parameters and seeing how they affect the results.
+    The function returns a tuple containing:
+    
+    :param focusDataDir:str: Specify the directory of the dataset
+    :return: The following variables:
+    :doc-author: Trelent
+    """
     focusParentDir = 'TEST'
     MAX_RUNS = 2
 

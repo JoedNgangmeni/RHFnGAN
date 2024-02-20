@@ -21,9 +21,9 @@ base_dir = os.path.dirname(os.path.abspath(__file__))  # Gets the directory wher
 
 focusParentDir = 'RESULTS'
 focusDataDir = 'XGB'
-MAX_RUNS = 5
-ESTNUM = 500
-DEPTH = 30
+# MAX_RUNS = 5
+# ESTNUM = 500
+# DEPTH = 30
 topNUM = 10
 
 rawDataPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDir}', 'RawData', f'{focusDataDir}'))

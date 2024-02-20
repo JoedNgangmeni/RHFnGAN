@@ -189,15 +189,18 @@ def make3DGraph(myData: pd.DataFrame, fromDataset, errorMetric):
 
 def my2DGraph(myData: pd.DataFrame, fromDataset: str, staticVariable: str, changingVar: str, errorMetric: str):
     """
-    Compare the performance of a model based on a static variable (number of trees or tree depth)
+    The my2DGraph function compares the performance of a model based on a static variable (number of trees or tree depth)
     while varying another variable within a specified range.
+        
     
-    :param myData: pd.DataFrame: DataFrame containing the data to be compared.
-    :param fromDataset: str: Name or identifier of the dataset being used.
-    :param staticVariable: str: The static variable ('numTrees' or 'treeDepth').
-    :param changingVar: str: The variable to be varied.
-    :param errorMetric: str: The performance metric to plot (e.g., "RMSE", "accuracy", "F1-score").
-    :param step_size: int: Step size for spacing between lines.
+    
+    :param myData: pd.DataFrame: Pass in the data to be used for the graph
+    :param fromDataset: str: Specify the name of the dataset being used
+    :param staticVariable: str: Specify which variable is static
+    :param changingVar: str: Specify the variable to be varied
+    :param errorMetric: str: Specify the performance metric to plot (e
+    :return: A plot object
+    :doc-author: Trelent
     """
     # # Filter the data based on the static variable
     # filtered_results = myData[(myData[changingVar] >= 1) & (myData[changingVar] <= myData[changingVar].max())]
@@ -248,15 +251,18 @@ def storeGraph(myFig: plt.Figure, staticVar:str, changingVar:str, fromDataset, e
     The storeGraph function takes in a figure object, the dataset it was generated from,
     the error metric used to generate it (e.g. RMSE), the model type (e.g. RF), the task type
     (e.g., regression or classification). 
-    
     It then stores that graph in a folder named after its dataset.
     
     :param myFig: plt.Figure: Pass the figure object (the graph object) to the function
+    :param staticVar:str: Determine the static variable in the graph
+    :param changingVar:str: Determine the variable that is changing in the graph
     :param fromDataset: Determine the dataset it was generated from
-    :param errorMetric: Determine the type of error metric used
-    :param modelType: Determine the type of model that was used to generate the graph
+    :param errorMetric: Determine the type of error metric used to generate the graph
+    :param modelType: Distinguish between the different types of models
     :param taskType: Distinguish between the different types of tasks
+    :param graphtype:str: Distinguish between 2d and 3d graphs
     :param graphs_path: Store the graphs in a specific folder
+    :param isNorm: bool: Determine whether the graph is normalized or not
     :return: None
     :doc-author: Trelent
     """

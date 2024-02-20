@@ -17,6 +17,8 @@ risingMetric = ['r2_train', 'accuracy_train', 'precision_train', 'recall_train',
 fallingMetric = ['rmse_train', 'mse_train', 'mae_train', 'mlogloss_train'
                  ,'rmse_test', 'mse_test', 'mae_test', 'mlogloss_test']
 
+graphTheseTrees = [1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 20., 30., 50., 100., 250., 400., 600., 800., 1000.]
+
 def testRun(focusDataDir:str):
     focusParentDir = 'TEST'
     MAX_RUNS = 2
