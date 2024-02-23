@@ -1,6 +1,6 @@
 regDatasets = ['year', 'air']
-clsDatasets = ['MNIST', 'HAR']
-allDatasets =  regDatasets + clsDatasets
+clsDatasets = ['HAR']
+allDatasets =  clsDatasets
 
 regHeader = ['numTrees', 'treeDepth', 'r2', 'rmse', 'mse',
                                'mae', 'buildTime']

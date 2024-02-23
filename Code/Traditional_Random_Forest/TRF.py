@@ -13,17 +13,17 @@ base_dir = os.path.dirname(os.path.abspath(__file__))  # Gets the directory wher
 # focusParentDir, focusDataDir, MAX_RUNS, ESTNUM, DEPTH, topNUM = my.prodRun('TRF')
 
 
-focusParentDir = 'RESULTS'
-focusDataDir = 'TRF'
-# MAX_RUNS = 2
-# ESTNUM = 5
-# DEPTH = 10
-topNUM = 10
+# focusParentDir = 'RESULTS'
+# focusDataDir = 'TRF'
+# # # MAX_RUNS = 2
+# # # ESTNUM = 5
+# # # DEPTH = 10
+# topNUM = 10
 
-rawDataPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDir}', 'RawData', f'{focusDataDir}'))
-aggDataPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDir}', 'AggData',f'{focusDataDir}'))
-graphsPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDir}', 'Graphs',f'{focusDataDir}'))
-tablesPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDir}', 'Tables',f'{focusDataDir}'))
+# rawDataPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDir}', 'RawData', f'{focusDataDir}'))
+# aggDataPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDir}', 'AggData',f'{focusDataDir}'))
+# graphsPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDir}', 'Graphs',f'{focusDataDir}'))
+# tablesPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDir}', 'Tables',f'{focusDataDir}'))
 
 # # Get storage ready to store data 
 # if focusParentDir == 'TEST':
@@ -45,9 +45,9 @@ tablesPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDi
 # agg.aggMyData(rawDataPath,aggDataPath)
 # print('\ndata aggregation complete...\n')
 
-print('\nstarting data tabling and graphing...\n')
-vis.graphsNTables(aggDataPath, graphsPath, tablesPath, topNUM)
-print('\ndata tabling and graphing complete...\n')
+# print('\nstarting data tabling and graphing...\n')
+# vis.graphsNTables(aggDataPath, graphsPath, tablesPath, topNUM)
+# print('\ndata tabling and graphing complete...\n')
 
 # '''
 
@@ -61,3 +61,22 @@ print('\ndata tabling and graphing complete...\n')
 # print(f'year x: {X[1]}\n')
 # print(y.shape)
 # print(end-start)
+
+'''
+FOR HYPERPARAMETER TESTING
+'''
+
+
+focusParentDir = 'RESULTS'
+focusDataDir = 'TRFcrit'
+MAX_RUNS = 10
+topNUM = 10
+
+rawDataPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDir}', 'RawData', f'{focusDataDir}'))
+aggDataPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDir}', 'AggData',f'{focusDataDir}'))
+graphsPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDir}', 'Graphs',f'{focusDataDir}'))
+tablesPath = os.path.abspath(os.path.join(base_dir, '..', '..', f'{focusParentDir}', 'Tables',f'{focusDataDir}'))
+
+print('\nstarting regression runs...\n')
+myForest.critRuns(f'{focusDataDir}', my.regDatasets, my.clsDatasets, ESTNUM, DEPTH, MAX_RUNS, rawDataPath, aggDataPath)
+print('\nregression runs complete...\n')

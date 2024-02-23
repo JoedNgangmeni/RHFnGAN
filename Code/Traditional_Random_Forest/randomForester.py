@@ -279,3 +279,58 @@ def remakeRegressionRuns(model: str, task: str, allDatasets: list, regDatasets: 
 
                 # increment counter    
                 runNumber += 1
+
+
+
+def critRuns(model: str, regDatasets: list, clsDatasets: list, MAX_RUNS: int, rawDataPath:str, aggDataPath: str ):
+
+    allDatasets = regDatasets+clsDatasets
+
+    for cr
+
+    for dataset in allDatasets:
+        if dataset in regDatasets: 
+            task = 'reg'
+            X,y = parse.getRegData(dataset)
+        
+        elif dataset in clsDatasets:
+            task = 'cls'
+            X,y = parse.getClsData(dataset)
+
+            runNumber = 1
+
+            while (runNumber < MAX_RUNS + 1):
+                print(f'\n{dataset} Run number:\t{runNumber}')
+
+                # Set file name system for raw data
+                saveRawDataHere = os.path.join(rawDataPath, dataset, f'_{myCrit}_{depth}_{dataset}_{model}_{task}_')
+
+                # add header to raw and agg file
+                with open(saveRawDataHere, 'a') as raw_file:
+                    if isEmpty(saveRawDataHere):
+                        raw_file.write(f"numTrees\ttreeDepth\tr2\trmse\tmse\tmae\tbuildTime\n") 
+                
+                # Set file name system for agg data
+                saveAggDataHere = os.path.join(aggDataPath, f'_{dataset}_{model}_{task}_')
+                
+                # add header to agg data file 
+                with open(saveAggDataHere, 'a') as agg_file:
+                    if isEmpty(saveAggDataHere):
+                        agg_file.write(f"numTrees\ttreeDepth\tr2\trmse\tmse\tmae\tbuildTime\n")
+
+                # run and time forest building
+                start_time = time.time()
+                r2, rmse, mse, mae = growRegressor(numEstimators, depth, X, y)
+                finish_time = time.time()
+                buildtime = finish_time - start_time
+
+                # write data to file
+                print(f'saving data in {saveRawDataHere}')
+                with open(saveRawDataHere, 'a') as raw_file:
+                    raw_file.write(f"{numEstimators}\t{depth}\t{r2}\t{rmse}\t{mse}\t{mae}\t{buildtime}\n")
+
+                # # increment counter    
+                runNumber += 1
+
+def growCrit():
+    print('hello')

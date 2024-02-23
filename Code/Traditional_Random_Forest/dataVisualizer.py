@@ -9,6 +9,8 @@ import pandas as pd, matplotlib.pyplot as plt, seaborn as sns
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.colors as mcolors
 
+import numpy as np 
+
 def graphsNTables(subdirectory_path:str, graphs_path:str, tables_path:str, topNUM:int):
     """
     The graphsNTables function takes in a subdirectory path, the 'graphs' directory path, and 'tables' directory path.
@@ -50,9 +52,9 @@ def graphsNTables(subdirectory_path:str, graphs_path:str, tables_path:str, topNU
                 # bestTableFrame = makeTableFrame(myAggData, errorMetric, topNUM)
                 # storeTable(bestTableFrame, fromDataset, errorMetric, modelType, taskType, tables_path)
 
-                my3DGraph = make3DGraph(myAggData, fromDataset , errorMetric)
-                storeGraph(my3DGraph, ' ', ' ', fromDataset, errorMetric, modelType, taskType, '3D', graphs_path, isNorm=False)
-                my3DGraph.close()
+                # my3DGraph = make3DGraph(myAggData, fromDataset , errorMetric)
+                # storeGraph(my3DGraph, ' ', ' ', fromDataset, errorMetric, modelType, taskType, '3D', graphs_path, isNorm=False)
+                # my3DGraph.close()
 
 
 
@@ -187,11 +189,69 @@ def make3DGraph(myData: pd.DataFrame, fromDataset, errorMetric):
     # plt.show()
     return plt
 
+# def my2DGraph(myData: pd.DataFrame, fromDataset: str, staticVariable: str, changingVar: str, errorMetric: str):
+#     """
+#     The my2DGraph function compares the performance of a model based on a static variable (number of trees or tree depth)
+#     while varying another variable within a specified range.
+        
+    
+    
+#     :param myData: pd.DataFrame: Pass in the data to be used for the graph
+#     :param fromDataset: str: Specify the name of the dataset being used
+#     :param staticVariable: str: Specify which variable is static
+#     :param changingVar: str: Specify the variable to be varied
+#     :param errorMetric: str: Specify the performance metric to plot (e
+#     :return: A plot object
+#     :doc-author: Trelent
+#     """
+#     # # Filter the data based on the static variable
+#     # filtered_results = myData[(myData[changingVar] >= 1) & (myData[changingVar] <= myData[changingVar].max())]
+    
+#     # Create a color palette with enough distinct colors
+
+#     print(f'\nMaking a 2D plot of {fromDataset} data y={errorMetric}, x={changingVar}, over {changingVar}...\n')
+#     num_colors = len(myData[staticVariable].unique()+10)
+#     colors = sns.color_palette('husl', n_colors=num_colors)
+    
+#     # Create a plot
+#     fig, ax = plt.subplots(figsize=(7, 5))
+    
+#     line_number = 0
+#     for label, group in myData.groupby(staticVariable):
+#         x_values = group[changingVar]
+#         y_values = group[errorMetric]
+
+#         # print(f'label: {label}\n group:{group}\n staticVariable: {staticVariable}\n')
+
+#         if staticVariable == 'numTrees':
+#             if label in my.graphTheseTrees:
+#                 # print (myData.loc[myData[staticVariable]== x])
+#                 ax.plot(x_values, y_values, marker='o', linestyle='-', label=f'{staticVariable}={label}', color=colors[line_number])    
+        
+#         elif staticVariable == 'treeDepth':
+#             ax.plot(x_values, y_values, marker='o', linestyle='-', label=f'{staticVariable}={label}', color=colors[line_number])    
+#         line_number +=1        
+
+#     errorMetric = errorMetric.split('_')[0]
+
+#     if errorMetric == 'buildTime':
+#         errorMetric = 'buildTime (s)'
+    
+#     ax.set_xlabel(changingVar)
+#     ax.set_ylabel(errorMetric)
+#     ax.set_title(f'{errorMetric} vs. {changingVar} over {staticVariable} ranges\n(Dataset: {fromDataset})')
+#     plt.subplots_adjust(left=.1, right=.74)  # Adjust figure size
+#     ax.legend(title=staticVariable, bbox_to_anchor=(1.005, 1), loc='upper left')  # Put legend on the right
+#     ax.grid(True)
+#     # plt.show()
+#     return plt
+
+
+
 def my2DGraph(myData: pd.DataFrame, fromDataset: str, staticVariable: str, changingVar: str, errorMetric: str):
     """
     The my2DGraph function compares the performance of a model based on a static variable (number of trees or tree depth)
     while varying another variable within a specified range.
-        
     
     
     :param myData: pd.DataFrame: Pass in the data to be used for the graph
@@ -199,7 +259,7 @@ def my2DGraph(myData: pd.DataFrame, fromDataset: str, staticVariable: str, chang
     :param staticVariable: str: Specify which variable is static
     :param changingVar: str: Specify the variable to be varied
     :param errorMetric: str: Specify the performance metric to plot (e
-    :return: A plot object
+    :return: A matplotlib plot object
     :doc-author: Trelent
     """
     # # Filter the data based on the static variable
@@ -208,8 +268,12 @@ def my2DGraph(myData: pd.DataFrame, fromDataset: str, staticVariable: str, chang
     # Create a color palette with enough distinct colors
 
     print(f'\nMaking a 2D plot of {fromDataset} data y={errorMetric}, x={changingVar}, over {changingVar}...\n')
-    num_colors = len(myData[staticVariable].unique())
-    colors = sns.color_palette('husl', n_colors=num_colors)
+    # num_colors = len(myData[staticVariable].unique())
+    # colors = sns.color_palette('husl', n_colors=num_colors)
+
+    t_num= len(my.graphTheseTrees) +5
+    tcol = sns.color_palette('husl', n_colors=t_num)
+
     
     # Create a plot
     fig, ax = plt.subplots(figsize=(7, 5))
@@ -224,10 +288,17 @@ def my2DGraph(myData: pd.DataFrame, fromDataset: str, staticVariable: str, chang
         if staticVariable == 'numTrees':
             if label in my.graphTheseTrees:
                 # print (myData.loc[myData[staticVariable]== x])
-                ax.plot(x_values, y_values, marker='o', linestyle='-', label=f'{staticVariable}={label}', color=colors[line_number])    
+                ax.plot(x_values, y_values, marker='o', linestyle='-', label=f'{staticVariable}={label}', color=tcol[my.graphTheseTrees.index(label)], markersize=1)    
         
         elif staticVariable == 'treeDepth':
-            ax.plot(x_values, y_values, marker='o', linestyle='-', label=f'{staticVariable}={label}', color=colors[line_number])    
+            uniqueDepths = myData[staticVariable].unique()
+            d_num= len(uniqueDepths)
+            dcol = sns.color_palette('husl', n_colors=d_num)
+
+            depth_index = np.where(uniqueDepths == myData[staticVariable][label])[0]
+            # print(f'uniqueDepths:{uniqueDepths}\nmyData[staticVariable][label]):{myData[staticVariable][label]}\ndepth_index:{depth_index}\ndepth_index[0]:{depth_index[0]}\n')
+            
+            ax.plot(x_values, y_values, marker='o', linestyle='-', label=f'{staticVariable}={label}', color=dcol[depth_index[0]], markersize=1)    
         line_number +=1        
 
     errorMetric = errorMetric.split('_')[0]
@@ -239,10 +310,11 @@ def my2DGraph(myData: pd.DataFrame, fromDataset: str, staticVariable: str, chang
     ax.set_ylabel(errorMetric)
     ax.set_title(f'{errorMetric} vs. {changingVar} over {staticVariable} ranges\n(Dataset: {fromDataset})')
     plt.subplots_adjust(left=.1, right=.74)  # Adjust figure size
-    ax.legend(title=staticVariable, bbox_to_anchor=(1.005, 1), loc='upper left')  # Put legend on the right
+    ax.legend(title=staticVariable, bbox_to_anchor=(1.005, 1.1), loc='upper left')  # Put legend on the right
     ax.grid(True)
     # plt.show()
     return plt
+
 
 
 

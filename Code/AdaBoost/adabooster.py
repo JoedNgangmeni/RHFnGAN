@@ -9,6 +9,15 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 
 def isEmpty(file_path):
+    """
+    The isEmpty function takes in a file path and returns True if the file is empty, False otherwise.
+        Args:
+            file_path (str): The path to the desired textfile.
+    
+    :param file_path: Specify the file path of the file to be checked
+    :return: True if the file is empty
+    :doc-author: Trelent
+    """
     return os.stat(file_path).st_size == 0
 
 def regressionRuns(model: str, task: str, allDatasets: list, regDatasets: list, ESTNUM: int, DEPTH: int, MAX_RUNS: int, rawDataPath: str, aggDataPath: str ):
@@ -55,22 +64,21 @@ def regressionRuns(model: str, task: str, allDatasets: list, regDatasets: list, 
                     # increment counter    
                     runNumber += 1
 
-def classificationRuns(model: str, task: str, allDatasets: list, clsDatasets: list, ESTNUM: int, DEPTH: int, MAX_RUNS: int, rawDataPath: str, aggDataPath: str ):
+def classificationRuns(model: str, task: str, allDatasets: list, clsDatasets: list, ESTNUM: int, startDEPTH: int, endDEPTH: int, MAX_RUNS: int, rawDataPath: str, aggDataPath: str ):
 
     for dataset in allDatasets:
         if dataset in clsDatasets: 
 
             # Get the data 
             X,y = parse.getClsData(dataset)
-            for depth in range(DEPTH+1):
+            while startDEPTH < endDEPTH: 
 
                 runNumber = 1
-                depth +=1
                 while (runNumber < MAX_RUNS + 1):
                     print(f'\nRun number:\t{runNumber}')
 
                     # run forest building
-                    clsResults = growClassifier(ESTNUM, depth, X, y)
+                    clsResults = growClassifier(ESTNUM, startDEPTH, X, y)
 
                     column_names = clsResults.columns.tolist()
 
@@ -78,7 +86,7 @@ def classificationRuns(model: str, task: str, allDatasets: list, clsDatasets: li
                     header = '\t'.join(column_names)
 
                     # Set file name system for raw data
-                    saveRawDataHere = os.path.join(rawDataPath, dataset, f'_{ESTNUM}_{depth}_{dataset}_{model}_{task}_')
+                    saveRawDataHere = os.path.join(rawDataPath, dataset, f'_{ESTNUM}_{startDEPTH}_{dataset}_{model}_{task}_')
 
                     # add header to raw and agg file
                     with open(saveRawDataHere, 'a') as raw_file:
@@ -99,6 +107,8 @@ def classificationRuns(model: str, task: str, allDatasets: list, clsDatasets: li
                     clsResults.to_csv(saveRawDataHere, mode='a', index=False, header=False, sep='\t')
                     # increment counter    
                     runNumber += 1
+                startDEPTH +=1
+
 
 def growRegressor(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
 
@@ -150,7 +160,6 @@ def growRegressor(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
 
 
 def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
-
     # Split the data into training and testing sets
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.30, shuffle=True)
 
@@ -169,30 +178,64 @@ def growClassifier(NUMTREES: int, DEPTH: int, X: pd.DataFrame , y: np.ndarray):
     # Use staged_predict to get staged predictions
     staged_test_predictions = ada.staged_predict(X_test)
     
+
     f1_test, accuracy_test, precision_test, recall_test, buildtime_test = [], [], [], [], []
     # Iterate over staged predictions and evaluate performance at each stage
     for i, y_pred in enumerate(staged_test_predictions, start=1):
-        accuracy_test.append(accuracy_score(y_test, y_pred))
-        precision_test.append(precision_score(y_test, y_pred, average="weighted", zero_division=0))
-        recall_test.append(recall_score(y_test, y_pred, average='weighted', zero_division=0))
-        f1_test.append(f1_score(y_test, y_pred, average='weighted', zero_division=0))
+        # print(f'i:{i}\ny_pred:{y_pred}')
+        accuracy = accuracy_score(y_test, y_pred)
+        accuracy_test.append(accuracy)
+        
+        precision = precision_score(y_test, y_pred, average="weighted", zero_division=0)
+        precision_test.append(precision)
+
+        recall = recall_score(y_test, y_pred, average='weighted', zero_division=0)
+        recall_test.append(recall)
+
+        f1 = f1_score(y_test, y_pred, average='weighted', zero_division=0)
+        f1_test.append(f1)
+
+        # print(f'accuracy:{accuracy}')
 
     adaClsResults = pd.DataFrame()
 
     numTrees, treeDepth = [], [] 
-    for x in range(NUMTREES):
-        numTrees.append(x+1) 
+    for x in range(1, NUMTREES+1, 1):
+        # print(i, x)
+        numTrees.append(x) 
         treeDepth.append(DEPTH)
         buildtime_test.append(elapsed_time)
-    
-    adaClsResults['numTrees'] = numTrees
-    adaClsResults['treeDepth'] = treeDepth
-    adaClsResults['f1'] = f1_test
-    adaClsResults['accuracy'] = accuracy_test
-    adaClsResults['precision'] = precision_test
-    adaClsResults['recall'] = recall_test
-    adaClsResults['buildTime'] = buildtime_test
 
-    
-    # print(adaClsResults)
+    if (i>=40): 
+        print(f'\n\nOnly boosted {i} times. Did not have  {NUMTREES} stages. Adding 0 for remaining stages \n\n')
+        while (i < NUMTREES):
+            accuracy_test.append(0)
+            precision_test.append(0)
+            recall_test.append(0)
+            f1_test.append(0)
+            buildtime_test[i] = 0
+            i += 1
+        
+        # print(f'stages:{i}\nlen(NumTrees):{len(numTrees)}\nlen(f1):{len(f1_test)}\nlen(accuracy_test):{len(accuracy_test)}\nlen(precision_test):{len(precision_test)}\nlen(recall_test):{len(recall_test)}\nlen(buildtime_test):{len(buildtime_test)}')
+
+        adaClsResults['numTrees'] = numTrees
+        adaClsResults['treeDepth'] = treeDepth
+        adaClsResults['f1'] = f1_test
+        adaClsResults['accuracy'] = accuracy_test
+        adaClsResults['precision'] = precision_test
+        adaClsResults['recall'] = recall_test
+        adaClsResults['buildTime'] = buildtime_test
+        return adaClsResults
+
+    elif(i<40): 
+        # print(f'stages:{i}\nlen(NumTrees):{len(numTrees)}\nlen(f1):{len(f1_test)}\nlen(accuracy_test):{len(accuracy_test)}\nlen(precision_test):{len(precision_test)}\nlen(recall_test):{len(recall_test)}\nlen(buildtime_test):{len(buildtime_test)}')
+        # print(f'f1:{f1}\t:{f1_test}')
+        print(f'\n\nfailed. Only boosted {i} times. Did not have  {NUMTREES} stages. running again \n\n')
+        growClassifier(NUMTREES, DEPTH, X, y)
+
     return adaClsResults
+    
+
+    # # print(f'should never get here if len(numTrees) dne (len(treeDepth) and len(f1_test) and len(accuracy_test) and len(precision_test) and len(recall_test) and len(buildtime_test))')
+        
+    # # print(adaClsResults)
